@@ -1,0 +1,695 @@
+﻿<!--<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+    <!-- Basic Page Needs
+      ================================================== -->
+    <meta charset="utf-8">
+    <title>KwikPay Dashboard</title>
+    <!-- SEO Meta
+      ================================================== -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="distribution" content="global">
+    <meta name="revisit-after" content="2 Days">
+    <meta name="robots" content="ALL">
+    <meta name="rating" content="8 YEARS">
+    <meta name="Language" content="en-us">
+    <meta http-equiv="reply-to" content="">
+    <meta name="GOOGLEBOT" content="NOARCHIVE">
+    <!-- Mobile Specific Metas
+      ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!-- CSS
+      ================================================== -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.jqueryui.min.css">
+
+    <link href="https://fonts.googleapis.com/css?family=Signika:300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/jquery.mCustomScrollbar.css">
+    <link rel="stylesheet" type="text/css" media="all" href="css/daterangepicker.css" />
+
+
+
+
+    <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    <!-- Favicons
+        ================================================== -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    <!--[if gte IE 9]>
+          <style type="text/css">
+            .gradient {
+               filter: none;
+            }
+          </style>
+        <![endif]-->
+    <!-- JS
+        ================================================== -->
+
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/moment.min.js"></script>
+    <script type="text/javascript" src="js/daterangepicker.js"></script>
+
+
+</head>
+<body>
+    <!-- HEADER START -->
+    <!-- HEADER END -->
+    <!-- CONTAINER START -->
+
+    <section>
+        <div class="content">
+
+            <div class="row_content">
+                <div class="sidebar_left contentscroll mCustomScrollbar">
+                    <div class="left_logo">
+                        <a href="#"><img src="images/logo-2.png" /></a>
+                    </div>
+                    <div class="sidebar_left_menu">
+                        <h3>Provider Details<span class="plusminus">-</span></h3>
+                        <ul style="display: block;">
+                            <li><a href="#">Provider Details</a></li>
+                            <li><a href="#">Free ride definition</a></li>
+                            <li><a href="#">Free ride duration</a></li>
+                        </ul>
+                        <h3>Amusement locations <span class="plusminus">+</span></h3>
+                        <ul>
+                            <li><a href="#">Amusement locations</a></li>
+                        </ul>
+
+                        <h3>Sales Data<span class="plusminus">+</span></h3>
+                        <ul>
+                            <li><a href="#">Payment transaction</a></li>
+                            <li><a href="#">App transaction data</a></li>
+                            <li><a href="#">Cash collection data</a></li>
+                        </ul>
+                        <h3>Charts<span class="plusminus">+</span></h3>
+                        <ul>
+                            <li><a href="#">Dashboard</a></li>
+                            <li><a href="#">Machine charts</a></li>
+                        </ul>
+                        <h3>Reports<span class="plusminus">+</span></h3>
+                        <ul>
+                            <li><a href="#">Report</a></li>
+                            <li><a href="#">Consolidated report</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="right_wrapper_content">
+                    <div class="top_bar">
+                        <div class="top_bar_left">
+                            <p>Good afternoon! Game on   Today's Date : 2/12/2019 12:58:27 PM</p>
+                        </div>
+                        <div class="top_bar_right">
+                            <div class="top_bar_menu">
+                                <a href="#"><span><img src="images/top_icon.png" /></span><i class="fa fa-chevron-down"></i></a>
+                                <ul class="top_bar_down">
+                                    <li><a href="#">My profile</a></li>
+                                    <li><a href="#">Contact us</a></li>
+                                    <li><a href="#">Logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="wrapper_dashboard_scroll contentscroll mCustomScrollbar">
+                        <div class="wrapper_dashboard ">
+                            <div class="titel_location titel_location_noicon"><h1>Dashboard All Location</h1></div>
+
+
+                            <div class="inputpicker_content_box button_location_right">
+                                <div class="input_picker_dashboard">
+                                    <input type="text" class="form-control demo_picker" />
+                                </div>
+
+                            </div>
+                            <div class="clear"></div>
+                            <div class="new_location_form1">
+                                <div class="dashboard_row_clear">
+                                    <div class="dashboard_left_text1">
+                                        <h3>Yesterday - 20/11/2019  </h3>
+                                        <div class="dashboard_box_padding">
+                                            <div class="dashboard_center_padding">
+                                                <h4>Active machine</h4>
+                                                <h5>5/10</h5>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard_box_padding active">
+                                            <div class="dashboard_center_padding">
+                                                <h4>No. of transaction</h4>
+                                                <h5>1,000</h5>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard_box_padding">
+                                            <div class="dashboard_center_padding">
+                                                <h4>Sales</h4>
+                                                <h5><strong>£ </strong> 100</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="dashboard_right_text1">
+
+                                        <h3>Current month - <span class="st_date">1/11/2019</span> - <span class="ed_date">25/11/2019</span>   </h3>
+                                        <div class="dashboard_box_padding">
+                                            <div class="dashboard_center_padding">
+                                                <h4>Active machine</h4>
+                                                <h5><strong>~ </strong> 5/10</h5>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard_box_padding">
+                                            <div class="dashboard_center_padding">
+                                                <h4>No. of transaction</h4>
+                                                <h5><strong>~ </strong> 1,000</h5>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard_box_padding">
+                                            <div class="dashboard_center_padding">
+                                                <h4>Sales</h4>
+                                                <h5><strong>£ </strong> 100</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dashboard_row_clear">
+                                    <div class="dashboard_chartholder_left">
+                                        <div class="dashboard_piechart_left">
+                                            <div class="canvas_piechart">
+                                                <canvas id="pieChart1" height="360" width="360"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard_piechart_right">
+                                            <div class="canvas_piechart">
+                                                <canvas id="pieChart" height="360" width="360"></canvas>
+                                            </div>
+
+                                            <div class="dashboard_machine_margin">
+                                                <h2>Top 5 machine</h2>
+                                                <ul class="dashboard_machine_link">
+                                                    <li class="color_bgbox1"><span></span> Ring toss</li>
+                                                    <li class="color_bgbox2"><span></span> Cruish blast</li>
+                                                    <li class="color_bgbox3"><span></span> Air hockey</li>
+                                                    <li class="color_bgbox4"><span></span> Peppa pig</li>
+                                                    <li class="color_bgbox5"><span></span> Quikdrop</li>
+                                                </ul>
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+                                    <div class="dashboard_chartholder_right">
+                                        <div class="dashboard_filter_right">
+                                            <div class="custom-select">
+                                                <select>
+                                                    <option value="0" selected>Filter by location </option>
+                                                    <option value="1">Filter by location </option>
+                                                    <option value="2">Filter by machine </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="dashboard_weekly_right">
+                                            <div class="dashboard_weekly_titel1">
+                                                <h3>Weekly Sales / Cash Drop</h3>
+                                                <ul>
+                                                    <li class="cash_sales_icon1"><span></span>App sales</li>
+                                                    <li class="cash_sales_icon2"><span></span>Cash sales</li>
+                                                    <li class="cash_sales_icon3"><span></span>Contactless sales</li>
+                                                </ul>
+                                            </div>
+                                            <div class="dashboard_current_left1">
+                                                <canvas id="lineChart" height="250"></canvas>
+                                            </div>
+                                            <div class="dashboard_current_right1">
+
+                                                <canvas id="barChart" height="250"></canvas>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+    <!-- CONTAINER END -->
+    <!-- FOOTER START -->
+
+    <footer> </footer>
+
+    <!-- FOOTER END -->
+
+</body>
+
+
+<script src="js/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="js/jquery.dataTables.min.js"></script>
+<script src="js/dataTables.jqueryui.min.js "></script>
+
+
+
+
+<script src="js/app.config.js"></script>
+
+
+
+<script src="js/bootstrap.min.js"></script>
+
+
+<script src="js/app.min.js"></script>
+
+
+
+<script src="js/chart.min.js"></script>
+
+<script type="text/javascript" src="js/daterangepicker.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+
+<script>
+
+
+    $(document).ready(function () {
+        $('#example').DataTable();
+    });
+
+    (function ($) {
+        $(window).on("load", function () {
+
+            $("a[rel='load-content']").click(function (e) {
+                e.preventDefault();
+                var url = $(this).attr("href");
+                $.get(url, function (data) {
+                    $(".contentscroll .mCSB_container").append(data); //load new content inside .mCSB_container
+                    //scroll-to appended content
+                    $(".contentscroll").mCustomScrollbar("scrollTo", "h2:last");
+                });
+            });
+
+            $(".contentscroll").delegate("a[href='top']", "click", function (e) {
+                e.preventDefault();
+                $(".contentscroll").mCustomScrollbar("scrollTo", $(this).attr("href"));
+            });
+
+        });
+    })(jQuery);
+
+
+    $(document).ready(function () {
+        $('#startDate').daterangepicker({
+            singleDatePicker: true,
+
+        });
+
+
+        var x, i, j, selElmnt, a, b, c;
+        /*look for any elements with the class "custom-select":*/
+        x = document.getElementsByClassName("custom-select");
+        for (i = 0; i < x.length; i++) {
+            selElmnt = x[i].getElementsByTagName("select")[0];
+            /*for each element, create a new DIV that will act as the selected item:*/
+            a = document.createElement("DIV");
+            a.setAttribute("class", "select-selected");
+            a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+            x[i].appendChild(a);
+            /*for each element, create a new DIV that will contain the option list:*/
+            b = document.createElement("DIV");
+            b.setAttribute("class", "select-items select-hide");
+            for (j = 1; j < selElmnt.length; j++) {
+                /*for each option in the original select element,
+                create a new DIV that will act as an option item:*/
+                c = document.createElement("DIV");
+                c.innerHTML = selElmnt.options[j].innerHTML;
+                c.addEventListener("click", function (e) {
+                    /*when an item is clicked, update the original select box,
+                    and the selected item:*/
+                    var y, i, k, s, h;
+                    s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                    h = this.parentNode.previousSibling;
+                    for (i = 0; i < s.length; i++) {
+                        if (s.options[i].innerHTML == this.innerHTML) {
+                            s.selectedIndex = i;
+                            h.innerHTML = this.innerHTML;
+                            y = this.parentNode.getElementsByClassName("same-as-selected");
+                            for (k = 0; k < y.length; k++) {
+                                y[k].removeAttribute("class");
+                            }
+                            this.setAttribute("class", "same-as-selected");
+                            break;
+                        }
+                    }
+                    h.click();
+                });
+                b.appendChild(c);
+            }
+            x[i].appendChild(b);
+            a.addEventListener("click", function (e) {
+                /*when the select box is clicked, close any other select boxes,
+                and open/close the current select box:*/
+                e.stopPropagation();
+                closeAllSelect(this);
+                this.nextSibling.classList.toggle("select-hide");
+                this.classList.toggle("select-arrow-active");
+            });
+        }
+        function closeAllSelect(elmnt) {
+            /*a function that will close all select boxes in the document,
+            except the current select box:*/
+            var x, y, i, arrNo = [];
+            x = document.getElementsByClassName("select-items");
+            y = document.getElementsByClassName("select-selected");
+            for (i = 0; i < y.length; i++) {
+                if (elmnt == y[i]) {
+                    arrNo.push(i)
+                } else {
+                    y[i].classList.remove("select-arrow-active");
+                }
+            }
+            for (i = 0; i < x.length; i++) {
+                if (arrNo.indexOf(i)) {
+                    x[i].classList.add("select-hide");
+                }
+            }
+        }
+        /*if the user clicks anywhere outside the select box,
+        then close all select boxes:*/
+        document.addEventListener("click", closeAllSelect);
+
+
+        $('.demo_picker').daterangepicker({
+            "ranges": {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+        }, function (start, end, label) {
+            $(".st_date").text(start.format('DD/MM/YYYY'));
+            $(".ed_date").text(end.format('DD/MM/YYYY'));
+            console.log("New date range selected: ' + start.format('YYYY-MM-DD') ' (predefined range: ' + label + ')");
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        (async () => {
+
+        pageSetUp();
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        const getMachineChartTime = (result, name) => {
+            switch(name) {
+                case 'DASHBOARD_PIE_ALL': {
+                    let pieAll = [];
+                    result.map((item, index) => {
+						pieAll.push({...item, color: getRandomColor()})
+                    });
+                    return pieAll
+                }
+                case 'DASHBOARD_PIE_MACHINES': {
+                    let pieFive = [];
+                    result.map((item, index) => {
+						pieFive.push({...item, color: getRandomColor()})
+                    });
+                    return pieFive
+                }
+                case 'DASHBOARD_WEEKLY_SALES': {
+                    let appSales = [], cashSales = [], cashlessSales = [], data = [];
+                    result.map((item, index) => {
+						appSales.push(item.APP_SALES);
+						cashSales.push(item.CASH_SALES);
+						cashlessSales.push(item.CONTACTLESS_SALES);
+						data.push(item.TXN_DATE);
+                    });
+                    return {appSales, cashSales, cashlessSales, data}
+                }
+                case 'DASHBOARD_CASH_DROP': {
+                    let time = [], downtime = [], uptime = [];
+                    result.map((item, index) => {
+                        time.push(item.time);
+                        downtime.push(item.downtime);
+                        uptime.push(item.uptime);
+                    });
+                    return {downtime, uptime, time}
+                }
+                default: 
+                    return;
+            }			
+		}
+
+	    const response1 = await fetch('http://localhost:3000/DASHBOARD_PIE_ALL');
+	    const res1 = await response1.json();
+        const pieAll = getMachineChartTime(res1, 'DASHBOARD_PIE_ALL');
+
+        const response2 = await fetch('http://localhost:3000/DASHBOARD_PIE_MACHINES');
+	    const res2 = await response2.json();
+        const pieFive = getMachineChartTime(res2, 'DASHBOARD_PIE_MACHINES');
+
+        const response3 = await fetch('http://localhost:3000/DASHBOARD_WEEKLY_SALES');
+	    const res3 = await response3.json();
+        const {appSales, cashSales, cashlessSales, data} = getMachineChartTime(res3, 'DASHBOARD_WEEKLY_SALES');
+
+        const response4 = await fetch('http://localhost:3000/DASHBOARD_CASH_DROP');
+	    const res4 = await response4.json();
+        const {downtime, uptime, time} = getMachineChartTime(res4, 'DASHBOARD_CASH_DROP');
+
+        var lineOptions = {
+            ///Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: true,
+            //String - Colour of the grid lines
+            scaleGridLineColor: "rgba(0,0,0,.05)",
+            //Number - Width of the grid lines
+            scaleGridLineWidth: 1,
+            //Boolean - Whether the line is curved between points
+            bezierCurve: true,
+            //Number - Tension of the bezier curve between points
+            bezierCurveTension: 0.4,
+            //Boolean - Whether to show a dot for each point
+            pointDot: true,
+            //Number - Radius of each point dot in pixels
+            pointDotRadius: 4,
+            //Number - Pixel width of point dot stroke
+            pointDotStrokeWidth: 1,
+            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+            pointHitDetectionRadius: 20,
+            //Boolean - Whether to show a stroke for datasets
+            datasetStroke: true,
+            //Number - Pixel width of dataset stroke
+            datasetStrokeWidth: 3,
+            //Boolean - Whether to fill the dataset with a colour
+            datasetFill: true,
+            //Boolean - Re-draw chart on page resize
+            responsive: true,
+            //String - A legend template
+            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        };
+        console.log(data, time);
+        var lineData = {
+            labels: data,
+            datasets: [
+                {
+                    label: "My First dataset",
+                    fillColor: "rgba(0,0,0,0)",
+                    strokeColor: "#00581E",
+                    pointColor: "#00581E",
+                    pointStrokeColor: "#00581E",
+                    pointHighlightFill: "#00581E",
+                    pointHighlightStroke: "#00581E",
+                    data: appSales
+                },
+                {
+                    label: "My Second dataset",
+                    fillColor: "rgba(0,0,0,0)",
+                    strokeColor: "#FFB200",
+                    pointColor: "#FFB200",
+                    pointStrokeColor: "#FFB200",
+                    pointHighlightFill: "#FFB200",
+                    pointHighlightStroke: "#FFB200",
+                    data: cashSales
+                },
+                 {
+                     label: "My Second dataset",
+                     fillColor: "rgba(0,0,0,0)",
+                     strokeColor: "#8CD600",
+                     pointColor: "#8CD600",
+                     pointStrokeColor: "#8CD600",
+                     pointHighlightFill: "#8CD600",
+                     pointHighlightStroke: "#8CD600",
+                     data: cashlessSales
+                 }
+            ]
+        };
+
+        // render chart
+        var ctx = document.getElementById("lineChart").getContext("2d");
+        var myNewChart = new Chart(ctx).Line(lineData, lineOptions);
+
+        // BAR CHART
+
+        var barOptions = {
+            //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+            scaleBeginAtZero: true,
+            //Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: true,
+            //String - Colour of the grid lines
+            scaleGridLineColor: "rgba(0,0,0,.05)",
+            //Number - Width of the grid lines
+            scaleGridLineWidth: 1,
+            //Boolean - If there is a stroke on each bar
+            barShowStroke: true,
+            //Number - Pixel width of the bar stroke
+            barStrokeWidth: 1,
+            //Number - Spacing between each of the X value sets
+            barValueSpacing: 0,
+            //Number - Spacing between data sets within X values
+            barDatasetSpacing: 0,
+            //Boolean - Re-draw chart on page resize
+            responsive: true,
+            //String - A legend template
+            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        }
+
+        var barData = {
+            labels: time,
+            datasets: [
+               {
+                   label: "My First dataset",
+                   fillColor: "#D9F4B0",
+                   strokeColor: "#D9F4B0",
+                   highlightFill: "#D9F4B0",
+                   highlightStroke: "#D9F4B0",
+                   data: downtime
+               },
+               {
+                   label: "My Second dataset",
+                   fillColor: "#8CD600",
+                   strokeColor: "#8CD600",
+                   highlightFill: "#8CD600",
+                   highlightStroke: "#8CD600",
+                   data: uptime
+               }
+            ]
+        };
+
+        // render chart
+        var ctx = document.getElementById("barChart").getContext("2d");
+        var myNewChart = new Chart(ctx).Bar(barData, barOptions);
+
+        // END BAR CHART
+
+        // PIE CHART
+
+        var pieOptions = {
+            //Boolean - Whether we should show a stroke on each segment
+            segmentShowStroke: true,
+            //String - The colour of each segment stroke
+            segmentStrokeColor: "#fff",
+            //Number - The width of each segment stroke
+            segmentStrokeWidth: 0,
+            //Number - Amount of animation steps
+            animationSteps: 100,
+            //String - types of animation
+            animationEasing: "easeOutBounce",
+            //Boolean - Whether we animate the rotation of the Doughnut
+            animateRotate: true,
+            //Boolean - Whether we animate scaling the Doughnut from the centre
+            animateScale: false,
+            //Boolean - Re-draw chart on page resize
+            responsive: true,
+            //String - A legend template
+            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"
+        };
+
+
+
+        // var pieData = [
+        //    {
+        //        value: 10000,
+        //        color: "#CAF27D",
+        //        highlight: "#CAF27D",
+        //        label: "Grey"
+        //    },
+        //     {
+        //         value: 15000,
+        //         color: "#D9F4B0",
+        //         highlight: "#D9F4B0",
+        //         label: "Grey"
+        //     },
+        //     {
+        //         value: 20000,
+        //         color: "#FFFFFF",
+        //         highlight: "#FFFFFF",
+        //         label: "Grey"
+        //     },
+        //     {
+        //         value: 50000,
+        //         color: "#00581E",
+        //         highlight: "#00581E",
+        //         label: "Blue"
+        //     },
+        //     {
+        //         value: 60000,
+        //         color: "#8CD600",
+        //         highlight: "#8CD600",
+        //         label: "Red"
+        //     }
+        // ];
+
+        // render chart
+        var ctx = document.getElementById("pieChart").getContext("2d");
+        var myNewChart = new Chart(ctx).Pie(pieFive, pieOptions);
+
+
+        // var pieData1 = [
+        //   {
+        //       value: 5000,
+        //       color: "#00581E",
+        //       highlight: "#00581E",
+        //       label: "Grey"
+        //   },
+        //    {
+        //        value: 2000,
+        //        color: "#8CD600",
+        //        highlight: "#8CD600",
+        //        label: "Grey"
+        //    }
+        // ];
+        var ctx = document.getElementById("pieChart1").getContext("2d");
+        var myNewChart = new Chart(ctx).Pie(pieAll, pieOptions);
+        // END PIE CHART
+        })()
+    })
+
+</script>
+</html>
