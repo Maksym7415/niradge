@@ -143,6 +143,11 @@
 											<input type="text" class="form-control demo_picker" />
 										</div>
 									</div>
+									<div id="machine_select_container">
+										<select id="machine_select">
+											<option>All Machines</option>
+										</select>
+									</div>
 									<div class="chart_content">
 										<!-- <div class="dashboard_weekly_titel1">
 											<ul>
@@ -388,7 +393,8 @@
 			this.res = null;
 			this.dates = null;
 			this.lineData = null;
-			this.skip = skip
+			this.skip = skip;
+			this.machineList = [];
 
 			this.getMs = function (date) {
 				return new Date(date).setHours(0, 0, 0, 0);
@@ -419,7 +425,7 @@
 				spinner.style.top = '50%'
 				spinner.style.left = '50%'
 				spinner.style.transform = 'translate(-50%, -50%)'
-				spinner.src = '../pngs/spinner.gif'
+				spinner.src = './images/spinner.gif'
 				parentNode.appendChild(spinner)
 			}
 			this.deleteLoader = function () {
@@ -435,7 +441,8 @@
 				try {
 					this.res = await this.fetchData(name);
 					this.deleteLoader();
-					this.displayData(isCompressed, start);
+					this.createMachineList();
+					this.displayData(isCompressed, start, true);
 				} catch (e) {
 					this.deleteLoader();
 					setTimeout(() => {
@@ -458,6 +465,28 @@
 					currentDate += 86400000
 				})
 				return dates;
+			}
+			this.createMachineList = function(){
+				const map = new Map();
+				for (const item of this.res.KPRESPONSE.CHART_DATA_LIST) {
+					if(!map.has(item.MACHINE_NUMBER)){
+						map.set(item.MACHINE_NUMBER, true);
+						this.machineList.push({
+							...item
+						});
+					}
+				}
+
+				let selectDOM = document.getElementById('machine_select');
+				let option;
+
+				this.machineList.map(item => {
+					option = document.createElement("option");
+					option.value = item.MACHINE_NUMBER;
+					option.text = item.MACHINE_NAME;
+					selectDOM.add(option);
+				});
+
 			}
 			this.redoneData = function (initialData) {
 				let newDate = {}
@@ -506,8 +535,10 @@
 				);
 				return newDate
 			}
-			this.displayData = function (isCompressed, initialData) {
-				this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+			this.displayData = function (isCompressed, initialData, flag) {
+				console.log(this.dates);
+				if(flag){
+					this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
 					Object.keys(this.dates).map((item) => {
 						if (item === el.TXN_DATE) {
 							return this.dates = {
@@ -523,11 +554,11 @@
 						}
 					})
 				});
+				}
 				if (isCompressed) this.dates = this.redoneData(initialData);
 				this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
 				this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
 				this.contactlessSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES);
-				console.log(Object.keys(this.dates))
 				this.lineData = {
 					labels: Object.keys(this.dates),
 					datasets: [{
@@ -551,6 +582,26 @@
 					]
 				};
 			}
+			this.displayOneMachineData = async function(machineNumber){
+				let machine = this.machineList.find(item => item.MACHINE_NUMBER == machineNumber);
+				this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+					Object.keys(this.dates).map(item => {
+						if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine.MACHINE_NUMBER) {
+							return this.dates = {
+								...this.dates,
+								[item]: {
+									APP_SALES: +el.APP_SALES,
+									CASH_SALES: +el.CASH_SALES,
+									CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+								}
+							}
+						}
+					});
+				});
+				let ctx = this.createCanvas();
+				this.displayData(false, '2020-01-01', false);
+				const myNewChart = new Chart(ctx, { type: 'line', data: window.machineChart.lineData, options: window.lineOptions});
+			}
 			this.createCanvas = function () {
 				document.getElementById("linechart_machine").remove();
 				const canvas = document.createElement('canvas');
@@ -562,43 +613,49 @@
 				return ctx;
 			}
 		}
+		
 		const skip = 5;
 		window.machineChart = new MachineChart(skip);
 		await window.machineChart.getDateRange('2020-01-01', '2020-01-31', '30DAYS');
+
+		let select = document.getElementById('machine_select');
+		select.addEventListener('change', () => {
+			machineChart.displayOneMachineData(event.target.value);
+		});
 
 		pageSetUp()
 
 		//----------------------DEPRECATED (OLD VERSION OF CHART JS)-------------------
 		window.lineOptions = {
 			///Boolean - Whether grid lines are shown across the chart
-			scaleShowGridLines: true,
+			// scaleShowGridLines: true,
 			//String - Colour of the grid lines
-			scaleGridLineColor: "rgba(0,0,0,.05)",
+			// scaleGridLineColor: "rgba(0,0,0,.05)",
 			//Number - Width of the grid lines
-			scaleGridLineWidth: 1,
+			// scaleGridLineWidth: 1,
 			//Boolean - Whether the line is curved between points
-			bezierCurve: true,
+			// bezierCurve: true,
 			//Number - Tension of the bezier curve between points
-			bezierCurveTension: 0,
+			// bezierCurveTension: 0,
 			//Boolean - Whether to show a dot for each point
-			pointDot: true,
+			// pointDot: true,
 			//Number - Radius of each point dot in pixels
-			pointDotRadius: 4,
+			// pointDotRadius: 4,
 			//Number - Pixel width of point dot stroke
-			pointDotStrokeWidth: 1,
+			// pointDotStrokeWidth: 1,
 			//Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-			pointHitDetectionRadius: 20,
+			// pointHitDetectionRadius: 20,
 			//Boolean - Whether to show a stroke for datasets
-			datasetStroke: true,
+			// datasetStroke: true,
 			//Number - Pixel width of dataset stroke
-			datasetStrokeWidth: 3,
+			// datasetStrokeWidth: 3,
 			//Boolean - Whether to fill the dataset with a colour
-			datasetFill: true,
+			// datasetFill: true,
 			//Boolean - Re-draw chart on page resize
 			responsive: true,
 			maintainAspectRatio: false,
 			//String - A legend template
-			legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+			// legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
 		};
 		//----------------------------------------
 
