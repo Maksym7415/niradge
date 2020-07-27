@@ -61,7 +61,7 @@
 
     <script src="js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="js/moment.min.js"></script>
-    <script type="text/javascript" src="js/daterangepicker.js"></script>
+    <script type="text/javascript" src="js/dp.js"></script>
 
 
 </head>
@@ -128,13 +128,10 @@
                     <div class="wrapper_dashboard_scroll contentscroll mCustomScrollbar">
                         <div class="wrapper_dashboard ">
                             <div class="titel_location titel_location_noicon"><h1>Dashboard All Location</h1></div>
-
-
                             <div class="inputpicker_content_box button_location_right">
                                 <div class="input_picker_dashboard">
                                     <input type="text" class="form-control demo_picker" />
                                 </div>
-
                             </div>
                             <div class="clear"></div>
                             <div class="new_location_form1">
@@ -280,7 +277,8 @@
 
 <script src="js/chart.min.js"></script>
 
-<script type="text/javascript" src="js/daterangepicker.js"></script>
+<!--<script type="text/javascript" src="js/daterangepicker.js"></script>-->
+<script type="text/javascript" src="js/dp.js"></script>
 <script type="text/javascript" src="js/app.js"></script>
 
 <script>
@@ -410,79 +408,12 @@
     });
 </script>
 
-
 <script type="text/javascript">
 
     $(document).ready(function () {
 
-        (async () => {
 
         pageSetUp();
-
-        function getRandomColor() {
-            var letters = '0123456789ABCDEF';
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
-            }
-            return color;
-        }
-
-        const getMachineChartTime = (result, name) => {
-            switch(name) {
-                case 'DASHBOARD_PIE_ALL': {
-                    let pieAll = [];
-                    result.map((item, index) => {
-						pieAll.push({...item, color: getRandomColor()})
-                    });
-                    return pieAll
-                }
-                case 'DASHBOARD_PIE_MACHINES': {
-                    let pieFive = [];
-                    result.map((item, index) => {
-						pieFive.push({...item, color: getRandomColor()})
-                    });
-                    return pieFive
-                }
-                case 'DASHBOARD_WEEKLY_SALES': {
-                    let appSales = [], cashSales = [], cashlessSales = [], data = [];
-                    result.map((item, index) => {
-						appSales.push(item.APP_SALES);
-						cashSales.push(item.CASH_SALES);
-						cashlessSales.push(item.CONTACTLESS_SALES);
-						data.push(item.TXN_DATE);
-                    });
-                    return {appSales, cashSales, cashlessSales, data}
-                }
-                case 'DASHBOARD_CASH_DROP': {
-                    let time = [], downtime = [], uptime = [];
-                    result.map((item, index) => {
-                        time.push(item.time);
-                        downtime.push(item.downtime);
-                        uptime.push(item.uptime);
-                    });
-                    return {downtime, uptime, time}
-                }
-                default: 
-                    return;
-            }			
-		}
-
-	    const response1 = await fetch('http://localhost:3000/DASHBOARD_PIE_ALL');
-	    const res1 = await response1.json();
-        const pieAll = getMachineChartTime(res1, 'DASHBOARD_PIE_ALL');
-
-        const response2 = await fetch('http://localhost:3000/DASHBOARD_PIE_MACHINES');
-	    const res2 = await response2.json();
-        const pieFive = getMachineChartTime(res2, 'DASHBOARD_PIE_MACHINES');
-
-        const response3 = await fetch('http://localhost:3000/DASHBOARD_WEEKLY_SALES');
-	    const res3 = await response3.json();
-        const {appSales, cashSales, cashlessSales, data} = getMachineChartTime(res3, 'DASHBOARD_WEEKLY_SALES');
-
-        const response4 = await fetch('http://localhost:3000/DASHBOARD_CASH_DROP');
-	    const res4 = await response4.json();
-        const {downtime, uptime, time} = getMachineChartTime(res4, 'DASHBOARD_CASH_DROP');
 
         var lineOptions = {
             ///Boolean - Whether grid lines are shown across the chart
@@ -514,9 +445,9 @@
             //String - A legend template
             legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
         };
-        console.log(data, time);
+
         var lineData = {
-            labels: data,
+            labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
             datasets: [
                 {
                     label: "My First dataset",
@@ -526,7 +457,7 @@
                     pointStrokeColor: "#00581E",
                     pointHighlightFill: "#00581E",
                     pointHighlightStroke: "#00581E",
-                    data: appSales
+                    data: [250, 350, 250, 350, 250, 350, 350]
                 },
                 {
                     label: "My Second dataset",
@@ -536,18 +467,18 @@
                     pointStrokeColor: "#FFB200",
                     pointHighlightFill: "#FFB200",
                     pointHighlightStroke: "#FFB200",
-                    data: cashSales
+                    data: [100, 200, 100, 200, 100, 200, 100]
                 },
-                 {
-                     label: "My Second dataset",
-                     fillColor: "rgba(0,0,0,0)",
-                     strokeColor: "#8CD600",
-                     pointColor: "#8CD600",
-                     pointStrokeColor: "#8CD600",
-                     pointHighlightFill: "#8CD600",
-                     pointHighlightStroke: "#8CD600",
-                     data: cashlessSales
-                 }
+                {
+                    label: "My Second dataset",
+                    fillColor: "rgba(0,0,0,0)",
+                    strokeColor: "#8CD600",
+                    pointColor: "#8CD600",
+                    pointStrokeColor: "#8CD600",
+                    pointHighlightFill: "#8CD600",
+                    pointHighlightStroke: "#8CD600",
+                    data: [0, 60, 40, 60, 40, 60, 40]
+                }
             ]
         };
 
@@ -581,24 +512,24 @@
         }
 
         var barData = {
-            labels: time,
+            labels: ["1/11", "2/11", "3/11", "4/11", "5/11", "6/11", "7/11"],
             datasets: [
-               {
-                   label: "My First dataset",
-                   fillColor: "#D9F4B0",
-                   strokeColor: "#D9F4B0",
-                   highlightFill: "#D9F4B0",
-                   highlightStroke: "#D9F4B0",
-                   data: downtime
-               },
-               {
-                   label: "My Second dataset",
-                   fillColor: "#8CD600",
-                   strokeColor: "#8CD600",
-                   highlightFill: "#8CD600",
-                   highlightStroke: "#8CD600",
-                   data: uptime
-               }
+                {
+                    label: "My First dataset",
+                    fillColor: "#D9F4B0",
+                    strokeColor: "#D9F4B0",
+                    highlightFill: "#D9F4B0",
+                    highlightStroke: "#D9F4B0",
+                    data: [65, 59, 80, 81, 56, 55, 40]
+                },
+                {
+                    label: "My Second dataset",
+                    fillColor: "#8CD600",
+                    strokeColor: "#8CD600",
+                    highlightFill: "#8CD600",
+                    highlightStroke: "#8CD600",
+                    data: [28, 48, 40, 19, 86, 27, 90]
+                }
             ]
         };
 
@@ -633,63 +564,346 @@
 
 
 
-        // var pieData = [
-        //    {
-        //        value: 10000,
-        //        color: "#CAF27D",
-        //        highlight: "#CAF27D",
-        //        label: "Grey"
-        //    },
-        //     {
-        //         value: 15000,
-        //         color: "#D9F4B0",
-        //         highlight: "#D9F4B0",
-        //         label: "Grey"
-        //     },
-        //     {
-        //         value: 20000,
-        //         color: "#FFFFFF",
-        //         highlight: "#FFFFFF",
-        //         label: "Grey"
-        //     },
-        //     {
-        //         value: 50000,
-        //         color: "#00581E",
-        //         highlight: "#00581E",
-        //         label: "Blue"
-        //     },
-        //     {
-        //         value: 60000,
-        //         color: "#8CD600",
-        //         highlight: "#8CD600",
-        //         label: "Red"
-        //     }
-        // ];
+        var pieData = [
+            {
+                value: 10000,
+                color: "#CAF27D",
+                highlight: "#CAF27D",
+                label: "Grey"
+            },
+            {
+                value: 15000,
+                color: "#D9F4B0",
+                highlight: "#D9F4B0",
+                label: "Grey"
+            },
+            {
+                value: 20000,
+                color: "#FFFFFF",
+                highlight: "#FFFFFF",
+                label: "Grey"
+            },
+            {
+                value: 50000,
+                color: "#00581E",
+                highlight: "#00581E",
+                label: "Blue"
+            },
+            {
+                value: 60000,
+                color: "#8CD600",
+                highlight: "#8CD600",
+                label: "Red"
+            }
+        ];
 
         // render chart
         var ctx = document.getElementById("pieChart").getContext("2d");
-        var myNewChart = new Chart(ctx).Pie(pieFive, pieOptions);
+        var myNewChart = new Chart(ctx).Pie(pieData, pieOptions);
 
 
-        // var pieData1 = [
-        //   {
-        //       value: 5000,
-        //       color: "#00581E",
-        //       highlight: "#00581E",
-        //       label: "Grey"
-        //   },
-        //    {
-        //        value: 2000,
-        //        color: "#8CD600",
-        //        highlight: "#8CD600",
-        //        label: "Grey"
-        //    }
-        // ];
+        var pieData1 = [
+            {
+                value: 5000,
+                color: "#00581E",
+                highlight: "#00581E",
+                label: "Grey"
+            },
+            {
+                value: 2000,
+                color: "#8CD600",
+                highlight: "#8CD600",
+                label: "Grey"
+            }
+        ];
         var ctx = document.getElementById("pieChart1").getContext("2d");
-        var myNewChart = new Chart(ctx).Pie(pieAll, pieOptions);
+        var myNewChart = new Chart(ctx).Pie(pieData1, pieOptions);
         // END PIE CHART
-        })()
+
     })
 
 </script>
+
+
+<!--<script type="text/javascript">-->
+
+<!--    $(document).ready(function () {-->
+
+<!--        (async () => {-->
+
+<!--        pageSetUp();-->
+
+<!--        function getRandomColor() {-->
+<!--            var letters = '0123456789ABCDEF';-->
+<!--            var color = '#';-->
+<!--            for (var i = 0; i < 6; i++) {-->
+<!--                color += letters[Math.floor(Math.random() * 16)];-->
+<!--            }-->
+<!--            return color;-->
+<!--        }-->
+
+<!--        const getMachineChartTime = (result, name) => {-->
+<!--            switch(name) {-->
+<!--                case 'DASHBOARD_PIE_ALL': {-->
+<!--                    let pieAll = [];-->
+<!--                    result.map((item, index) => {-->
+<!--						pieAll.push({...item, color: getRandomColor()})-->
+<!--                    });-->
+<!--                    return pieAll-->
+<!--                }-->
+<!--                case 'DASHBOARD_PIE_MACHINES': {-->
+<!--                    let pieFive = [];-->
+<!--                    result.map((item, index) => {-->
+<!--						pieFive.push({...item, color: getRandomColor()})-->
+<!--                    });-->
+<!--                    return pieFive-->
+<!--                }-->
+<!--                case 'DASHBOARD_WEEKLY_SALES': {-->
+<!--                    let appSales = [], cashSales = [], cashlessSales = [], data = [];-->
+<!--                    result.map((item, index) => {-->
+<!--						appSales.push(item.APP_SALES);-->
+<!--						cashSales.push(item.CASH_SALES);-->
+<!--						cashlessSales.push(item.CONTACTLESS_SALES);-->
+<!--						data.push(item.TXN_DATE);-->
+<!--                    });-->
+<!--                    return {appSales, cashSales, cashlessSales, data}-->
+<!--                }-->
+<!--                case 'DASHBOARD_CASH_DROP': {-->
+<!--                    let time = [], downtime = [], uptime = [];-->
+<!--                    result.map((item, index) => {-->
+<!--                        time.push(item.time);-->
+<!--                        downtime.push(item.downtime);-->
+<!--                        uptime.push(item.uptime);-->
+<!--                    });-->
+<!--                    return {downtime, uptime, time}-->
+<!--                }-->
+<!--                default:-->
+<!--                    return;-->
+<!--            }-->
+<!--		}-->
+
+<!--	    const response1 = await fetch('http://localhost:3000/DASHBOARD_PIE_ALL');-->
+<!--	    const res1 = await response1.json();-->
+<!--        const pieAll = getMachineChartTime(res1, 'DASHBOARD_PIE_ALL');-->
+
+<!--        const response2 = await fetch('http://localhost:3000/DASHBOARD_PIE_MACHINES');-->
+<!--	    const res2 = await response2.json();-->
+<!--        const pieFive = getMachineChartTime(res2, 'DASHBOARD_PIE_MACHINES');-->
+
+<!--        const response3 = await fetch('http://localhost:3000/DASHBOARD_WEEKLY_SALES');-->
+<!--	    const res3 = await response3.json();-->
+<!--        const {appSales, cashSales, cashlessSales, data} = getMachineChartTime(res3, 'DASHBOARD_WEEKLY_SALES');-->
+
+<!--        const response4 = await fetch('http://localhost:3000/DASHBOARD_CASH_DROP');-->
+<!--	    const res4 = await response4.json();-->
+<!--        const {downtime, uptime, time} = getMachineChartTime(res4, 'DASHBOARD_CASH_DROP');-->
+
+<!--        var lineOptions = {-->
+<!--            ///Boolean - Whether grid lines are shown across the chart-->
+<!--            scaleShowGridLines: true,-->
+<!--            //String - Colour of the grid lines-->
+<!--            scaleGridLineColor: "rgba(0,0,0,.05)",-->
+<!--            //Number - Width of the grid lines-->
+<!--            scaleGridLineWidth: 1,-->
+<!--            //Boolean - Whether the line is curved between points-->
+<!--            bezierCurve: true,-->
+<!--            //Number - Tension of the bezier curve between points-->
+<!--            bezierCurveTension: 0.4,-->
+<!--            //Boolean - Whether to show a dot for each point-->
+<!--            pointDot: true,-->
+<!--            //Number - Radius of each point dot in pixels-->
+<!--            pointDotRadius: 4,-->
+<!--            //Number - Pixel width of point dot stroke-->
+<!--            pointDotStrokeWidth: 1,-->
+<!--            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point-->
+<!--            pointHitDetectionRadius: 20,-->
+<!--            //Boolean - Whether to show a stroke for datasets-->
+<!--            datasetStroke: true,-->
+<!--            //Number - Pixel width of dataset stroke-->
+<!--            datasetStrokeWidth: 3,-->
+<!--            //Boolean - Whether to fill the dataset with a colour-->
+<!--            datasetFill: true,-->
+<!--            //Boolean - Re-draw chart on page resize-->
+<!--            responsive: true,-->
+<!--            //String - A legend template-->
+<!--            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"-->
+<!--        };-->
+<!--        console.log(data, time);-->
+<!--        var lineData = {-->
+<!--            labels: data,-->
+<!--            datasets: [-->
+<!--                {-->
+<!--                    label: "My First dataset",-->
+<!--                    fillColor: "rgba(0,0,0,0)",-->
+<!--                    strokeColor: "#00581E",-->
+<!--                    pointColor: "#00581E",-->
+<!--                    pointStrokeColor: "#00581E",-->
+<!--                    pointHighlightFill: "#00581E",-->
+<!--                    pointHighlightStroke: "#00581E",-->
+<!--                    data: appSales-->
+<!--                },-->
+<!--                {-->
+<!--                    label: "My Second dataset",-->
+<!--                    fillColor: "rgba(0,0,0,0)",-->
+<!--                    strokeColor: "#FFB200",-->
+<!--                    pointColor: "#FFB200",-->
+<!--                    pointStrokeColor: "#FFB200",-->
+<!--                    pointHighlightFill: "#FFB200",-->
+<!--                    pointHighlightStroke: "#FFB200",-->
+<!--                    data: cashSales-->
+<!--                },-->
+<!--                 {-->
+<!--                     label: "My Second dataset",-->
+<!--                     fillColor: "rgba(0,0,0,0)",-->
+<!--                     strokeColor: "#8CD600",-->
+<!--                     pointColor: "#8CD600",-->
+<!--                     pointStrokeColor: "#8CD600",-->
+<!--                     pointHighlightFill: "#8CD600",-->
+<!--                     pointHighlightStroke: "#8CD600",-->
+<!--                     data: cashlessSales-->
+<!--                 }-->
+<!--            ]-->
+<!--        };-->
+
+<!--        // render chart-->
+<!--        var ctx = document.getElementById("lineChart").getContext("2d");-->
+<!--        var myNewChart = new Chart(ctx).Line(lineData, lineOptions);-->
+
+<!--        // BAR CHART-->
+
+<!--        var barOptions = {-->
+<!--            //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value-->
+<!--            scaleBeginAtZero: true,-->
+<!--            //Boolean - Whether grid lines are shown across the chart-->
+<!--            scaleShowGridLines: true,-->
+<!--            //String - Colour of the grid lines-->
+<!--            scaleGridLineColor: "rgba(0,0,0,.05)",-->
+<!--            //Number - Width of the grid lines-->
+<!--            scaleGridLineWidth: 1,-->
+<!--            //Boolean - If there is a stroke on each bar-->
+<!--            barShowStroke: true,-->
+<!--            //Number - Pixel width of the bar stroke-->
+<!--            barStrokeWidth: 1,-->
+<!--            //Number - Spacing between each of the X value sets-->
+<!--            barValueSpacing: 0,-->
+<!--            //Number - Spacing between data sets within X values-->
+<!--            barDatasetSpacing: 0,-->
+<!--            //Boolean - Re-draw chart on page resize-->
+<!--            responsive: true,-->
+<!--            //String - A legend template-->
+<!--            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"-->
+<!--        }-->
+
+<!--        var barData = {-->
+<!--            labels: time,-->
+<!--            datasets: [-->
+<!--               {-->
+<!--                   label: "My First dataset",-->
+<!--                   fillColor: "#D9F4B0",-->
+<!--                   strokeColor: "#D9F4B0",-->
+<!--                   highlightFill: "#D9F4B0",-->
+<!--                   highlightStroke: "#D9F4B0",-->
+<!--                   data: downtime-->
+<!--               },-->
+<!--               {-->
+<!--                   label: "My Second dataset",-->
+<!--                   fillColor: "#8CD600",-->
+<!--                   strokeColor: "#8CD600",-->
+<!--                   highlightFill: "#8CD600",-->
+<!--                   highlightStroke: "#8CD600",-->
+<!--                   data: uptime-->
+<!--               }-->
+<!--            ]-->
+<!--        };-->
+
+<!--        // render chart-->
+<!--        var ctx = document.getElementById("barChart").getContext("2d");-->
+<!--        var myNewChart = new Chart(ctx).Bar(barData, barOptions);-->
+
+<!--        // END BAR CHART-->
+
+<!--        // PIE CHART-->
+
+<!--        var pieOptions = {-->
+<!--            //Boolean - Whether we should show a stroke on each segment-->
+<!--            segmentShowStroke: true,-->
+<!--            //String - The colour of each segment stroke-->
+<!--            segmentStrokeColor: "#fff",-->
+<!--            //Number - The width of each segment stroke-->
+<!--            segmentStrokeWidth: 0,-->
+<!--            //Number - Amount of animation steps-->
+<!--            animationSteps: 100,-->
+<!--            //String - types of animation-->
+<!--            animationEasing: "easeOutBounce",-->
+<!--            //Boolean - Whether we animate the rotation of the Doughnut-->
+<!--            animateRotate: true,-->
+<!--            //Boolean - Whether we animate scaling the Doughnut from the centre-->
+<!--            animateScale: false,-->
+<!--            //Boolean - Re-draw chart on page resize-->
+<!--            responsive: true,-->
+<!--            //String - A legend template-->
+<!--            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>"-->
+<!--        };-->
+
+
+
+<!--        // var pieData = [-->
+<!--        //    {-->
+<!--        //        value: 10000,-->
+<!--        //        color: "#CAF27D",-->
+<!--        //        highlight: "#CAF27D",-->
+<!--        //        label: "Grey"-->
+<!--        //    },-->
+<!--        //     {-->
+<!--        //         value: 15000,-->
+<!--        //         color: "#D9F4B0",-->
+<!--        //         highlight: "#D9F4B0",-->
+<!--        //         label: "Grey"-->
+<!--        //     },-->
+<!--        //     {-->
+<!--        //         value: 20000,-->
+<!--        //         color: "#FFFFFF",-->
+<!--        //         highlight: "#FFFFFF",-->
+<!--        //         label: "Grey"-->
+<!--        //     },-->
+<!--        //     {-->
+<!--        //         value: 50000,-->
+<!--        //         color: "#00581E",-->
+<!--        //         highlight: "#00581E",-->
+<!--        //         label: "Blue"-->
+<!--        //     },-->
+<!--        //     {-->
+<!--        //         value: 60000,-->
+<!--        //         color: "#8CD600",-->
+<!--        //         highlight: "#8CD600",-->
+<!--        //         label: "Red"-->
+<!--        //     }-->
+<!--        // ];-->
+
+<!--        // render chart-->
+<!--        var ctx = document.getElementById("pieChart").getContext("2d");-->
+<!--        var myNewChart = new Chart(ctx).Pie(pieFive, pieOptions);-->
+
+
+<!--        // var pieData1 = [-->
+<!--        //   {-->
+<!--        //       value: 5000,-->
+<!--        //       color: "#00581E",-->
+<!--        //       highlight: "#00581E",-->
+<!--        //       label: "Grey"-->
+<!--        //   },-->
+<!--        //    {-->
+<!--        //        value: 2000,-->
+<!--        //        color: "#8CD600",-->
+<!--        //        highlight: "#8CD600",-->
+<!--        //        label: "Grey"-->
+<!--        //    }-->
+<!--        // ];-->
+<!--        var ctx = document.getElementById("pieChart1").getContext("2d");-->
+<!--        var myNewChart = new Chart(ctx).Pie(pieAll, pieOptions);-->
+<!--        // END PIE CHART-->
+<!--        })()-->
+<!--    })-->
+
+<!--</script>-->
 </html>
