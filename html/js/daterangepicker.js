@@ -30,7 +30,6 @@
     }
 }(this, function(moment, $) {
     var DateRangePicker = function(element, options, cb, { isShowCustomRange, iscustomRange, startDate, endDate }) {
-        console.log(iscustomRange)
         //default settings for options
         this.parentEl = 'body';
         this.element = $(element);
@@ -1356,7 +1355,6 @@
 
         calculateChosenLabel: function () {
             var customRange = true;
-            console.log(this)
             var i = 0;
             for (var range in this.ranges) {
               if (this.timePicker) {
