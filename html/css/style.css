@@ -34,9 +34,9 @@ table {
 
 /* #Basic Styles
 ================================================== */
- 
+
 html body {
-	background: #F6F6F6; 
+	background: #F6F6F6;
 	font: 14px/21px 'Signika';
 	color: #444; font-weight:400;
 	-webkit-font-smoothing: antialiased; /* Fix for webkit rendering */
@@ -49,7 +49,7 @@ html body {
 }
 body h1, body h2, body h3, body h4, body h5, body h6 {
 	font-family: 'Signika';
-	color: #181818; 
+	color: #181818;
 	font-weight: 500;
 }
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
@@ -100,7 +100,7 @@ hr {
 	margin: 10px 0 30px;
 	height: 0;
 }
- 
+
 /*input[type="text"],*/
 /* #Misc
 ================================================== */
@@ -176,19 +176,19 @@ a:hover {
 * {
     box-sizing: border-box;
 }
- 
 
 
-::placeholder {  
+
+::placeholder {
   color: #AEAEAE;
-  opacity: 1; 
+  opacity: 1;
 }
 
-:-ms-input-placeholder {  
+:-ms-input-placeholder {
   color: #AEAEAE;
 }
 
-::-ms-input-placeholder { 
+::-ms-input-placeholder {
   color: #AEAEAE;
 }
 
@@ -196,10 +196,10 @@ input{font-family: 'Signika';}
 
 
 /*--------------------------------------------------
-			BODY BACKGROUND START 
+			BODY BACKGROUND START
 ---------------------------------------------------*/
 
-  
+
 
 /*--------------------------------------------------
 			BODY BACKGROUND END
@@ -217,28 +217,28 @@ input{font-family: 'Signika';}
 /*--------------------------------------------------
 			HEADER CSS END
 ---------------------------------------------------*/
-   
 
 
- 
 
- 
+
+
+
 /*--------------------------------------------------
 			CONTAINER CSS START
 ---------------------------------------------------*/
 
- 
+
 
 
 /* login css */
 
 
 .content_login{ padding:15px; display:block; height:100%;}
-.content_login_left{ float:left; display:table; vertical-align:middle; text-align:center; width:50%; height:100%; 
-background: #6dba06; 
-background: -moz-linear-gradient(top, #6dba06 0%, #00581e 100%);  
-background: -webkit-linear-gradient(top, #6dba06 0%,#00581e 100%); 
-background: linear-gradient(to bottom, #6dba06 0%,#00581e 100%); 
+.content_login_left{ float:left; display:table; vertical-align:middle; text-align:center; width:50%; height:100%;
+background: #6dba06;
+background: -moz-linear-gradient(top, #6dba06 0%, #00581e 100%);
+background: -webkit-linear-gradient(top, #6dba06 0%,#00581e 100%);
+background: linear-gradient(to bottom, #6dba06 0%,#00581e 100%);
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6dba06', endColorstr='#00581e',GradientType=0 );  }
 .content_login_right{ position:relative; float:left; width:50%; height:100%; display:table;}
 .table_login_left{padding: 0 130px 0 0; display:table-cell; vertical-align:middle;}
@@ -385,10 +385,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6dba06', end
 .edit_machine_formrow { margin: 0 0 25px;display: flex;}
 .edit_machine_formleft label.edit_machine_label2line {line-height: 24px;margin-top: 10px;padding-top: 0;}
 .editmachine_selectright .custom-select {float: left;width: 45%;}
-.editmachine_selectright label {color: #464646;display: block; width:10%;font-size: 20px; float:left;font-weight: 300;padding: 9px 0 0 0;text-align: center;} 
+.editmachine_selectright label {color: #464646;display: block; width:10%;font-size: 20px; float:left;font-weight: 300;padding: 9px 0 0 0;text-align: center;}
 .editmachine_selectright .input_picker{ float:left; width:45%; position:relative;}
 .input_picker .edit_machine_forminput{ width:100%;}
- 
+
 .input_picker:after {position: absolute;content:"\f078";  font-family: 'FontAwesome';top: 8px; color:#8CD600; font-size:18px;right: 12px; cursor:pointer;}
 .input_picker:focus { top: 8px;  content:"\f077";}
 .edit_machine_formleft label.editmachine_calendaricon{ background:url(../images/calendar.png) no-repeat 33% 11px; padding: 9px 63px 0 0;}
@@ -447,7 +447,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
 .dashboard_right_text1 h3{ padding:0 0 10px 35px; font-size:20px; font-weight:300; color:#474747; line-height:normal;}
 .dashboard_row_clear{ display:flex;}
 
- 
+
 .dashboard_chartholder_left {
     display: block;padding:125px 0 0 0;
     float: left;
@@ -460,7 +460,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
 
 .canvas_piechart{ border:5px solid #fff; width:190px; margin:auto;   box-shadow: 0 5px 8px #bcbcbc;border-radius: 300px;  }
 
- 
+
 
 
 .dashboard_machine_margin{ display:table;margin:auto; padding:25px 0 0 0; width:180px;}
@@ -471,7 +471,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
     margin: auto auto 15px;
     padding: 0 0 6px;
 }
- 
+
 .dashboard_machine_link li{ font-size:12px; color:#474747; display:block; float:left; width:50%; font-weight:300; position:relative; padding:0 0 6px 21px;}
 .dashboard_machine_link li span {
     border-radius: 90px;
@@ -534,7 +534,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
 }
 .right_block .edit_machine_formleft label {
     text-align:left;
-    
+
 }
 .right_block .edit_machine_formleft {
     width:26% !important;
@@ -544,7 +544,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
 	font-family: 'Signika';
         width: 46% !important;
     float: left;
-    margin-right: 10px;    
+    margin-right: 10px;
     padding: 8px 10px;
     background: #fff;
     border: 1px solid #D6D6D6;
@@ -574,7 +574,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
 
 .less_terminal_form1 .edit_machine_forminput{width: 85%;}
 .less_terminal_form1 .edit_machine_formleft label.editmachine_calendaricon {
-    background:   url("../images/calendar.png") no-repeat scroll 40% 11px; 
+    background:   url("../images/calendar.png") no-repeat scroll 40% 11px;
 }
 .less_terminal_form1 .custom-select{width: 85%;}
 .less_terminal_form1 .input_picker .edit_machine_forminput{
@@ -585,7 +585,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
 }
 .less_terminal_form1 .editmachine_selectright .select-selected{ font-size:15px;}
 
- 
+
 
 .less_terminal_form1 .edit_machine_formleft label.less_terminal_label1 {
     padding: 9px 0 0;
@@ -594,7 +594,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
     width: 100%;
 }
 
- 
+
 .less_terminal_icon1 {
     background: #ff0303 ;
     border-radius: 120px;
@@ -612,11 +612,11 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
     margin: 0 0 20px;
 }
 
- 
+
 .dropdown {
-  position: relative; 
+  position: relative;
 }
- 
+
 .dropdown dd,
 .dropdown dt {
   margin: 0px;
@@ -659,7 +659,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
   left: 0px;
   padding: 10px 10px 0 10px;
   position: relative;
-  top: 2px;font-size:15px; 
+  top: 2px;font-size:15px;
   width: 85%;
   list-style: none;  box-shadow: 0 5px 10px #cecece;border-radius: 10px;
   overflow: auto;
@@ -689,14 +689,14 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
 display: inline-block;
 vertical-align: middle; margin: 2px 0 0;
 position: relative;border: 1px solid #8CD600; }
- 
+
 
 .checkbox input[type="checkbox"]  {
 opacity: 0; display:none;
 z-index: 1; }
 
 
-input[type="checkbox"].styled:checked + label:after { 
+input[type="checkbox"].styled:checked + label:after {
     color: #8cd600;
  content: "\f00c";
     font-family: "FontAwesome";
@@ -749,7 +749,7 @@ input[type="checkbox"].styled:checked + label:after {
 .vending_machin2_right .dashboard_weekly_right{ padding:94px 15px 15px 15px;}
 
 .chart_width_bar{ width:100%; height:500px; }
- 
+
 .dashboard_weekly_right.machinechart_right2 {
     padding: 15px;
 }
@@ -762,9 +762,9 @@ input[type="checkbox"].styled:checked + label:after {
     clear: both;
 }
 
-	
+
 	.machinechart_right2 ul li.cash_sales_icon1 span{ background:#FF0000;}
-	
+
 	.machinechart_right2 ul li.cash_sales_icon2 span{ background:#8CD600;}
 .date_error_msg {
     color:red;
@@ -776,28 +776,28 @@ input[type="checkbox"].styled:checked + label:after {
 /*--------------------------------------------------
 			CONTAINER CSS END
 ---------------------------------------------------*/
-  
+
 
 
 
 /*--------------------------------------------------
 			FOOTER CSS START
 ---------------------------------------------------*/
- 
+
 
 /*--------------------------------------------------
 			FOOTER CSS END
 ---------------------------------------------------*/
- 
- 
- 
+
+
+
 /*--------------------------------------------------
             RESPONSIVE CSS START
----------------------------------------------------*/ 
- 
- 
+---------------------------------------------------*/
+
+
 @media (max-width:1370px) {
-	
+
 	 .machinechart_right2 .chart_width_bar {
     height: 420px;}
     .content_login_right:before {
@@ -850,8 +850,8 @@ input[type="checkbox"].styled:checked + label:after {
     width: 100%;
     padding: 5px;
     margin: 20px 0px 20px 0px;
-    box-shadow:0 3px 10px #ccc; 
-    background:#fff; 
+    box-shadow:0 3px 10px #ccc;
+    background:#fff;
     border-radius:10px;
 }
 
@@ -863,4 +863,26 @@ input[type="checkbox"].styled:checked + label:after {
 .half_width_chart_container{
     width: 49%;
     height: auto;
+}
+
+.flex {
+    display: flex;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.ml-10 {
+    margin-left: 10px;
+}
+
+.w-auto {
+    width: auto;
+}
+
+#machine_select_container .select-items {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
