@@ -833,3 +833,56 @@ input[type="checkbox"].styled:checked + label:after {
 ---------------------------------------------------*/
 
 /*-------------------------OWN STYLES-------------------------*/
+
+
+
+.chart_form{
+    margin: 20px 0px 0px;
+    display: flex;
+    flex-direction: column;
+    flex-flow: wrap;
+    width: 100%;
+    justify-content: space-between;
+    /* overflow: auto; */
+}
+
+.chart_content{
+    width: 100%;
+    padding: 5px;
+    margin: 20px 0px 20px 0px;
+    box-shadow:0 3px 10px #ccc;
+    background:#fff;
+    border-radius:10px;
+}
+
+.full_width_chart_container{
+    width: 100%;
+    height: auto;
+}
+
+.half_width_chart_container{
+    width: 49%;
+    height: auto;
+}
+
+.flex {
+    display: flex;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.ml-10 {
+    margin-left: 10px;
+}
+
+.w-auto {
+    width: auto;
+}
+
+#machine_select_container .select-items {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
