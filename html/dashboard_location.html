@@ -187,7 +187,7 @@
                                                         <canvas id="pieChart1" height="360" width="360"></canvas>
                                                     </div>
                                                 </div>
-                                                <div class="dashboard_piechart_right" id='mainPieRightDiv'>
+                                                <div class="dashboard_piechart_right flex flex-column" id='mainPieRightDiv'>
                                                     <div class="canvas_piechart" id='canvas_piechart'>
                                                         <canvas id="pieChart" height="360" width="360"></canvas>
                                                     </div>
@@ -894,7 +894,6 @@
                     //Boolean - Re-draw chart on page resize
                     responsive: true,
                     //String - A legend template
-                    legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
                 }
         
                 var barData = {

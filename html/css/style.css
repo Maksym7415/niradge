@@ -453,7 +453,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
     float: left;
     width: 40%;
 }
-.dashboard_piechart_right{ width:50%; float:left;display: flex; flex-direction: column;}
+.dashboard_piechart_right{ width:50%; float:left;}
     
 .dashboard_piechart_left{ width:50%; float:left;}
 
