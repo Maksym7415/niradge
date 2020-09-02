@@ -165,14 +165,13 @@
 
 
                                     <div class="dashboard_weekly_right">
-                                        <div class="dashboard_weekly_titel1">
+                                        <!-- <div class="dashboard_weekly_titel1">
                                             <ul>
                                                 <li class="cash_sales_icon1"><span></span>App</li>
                                                 <li class="cash_sales_icon2"><span></span>Cash</li>
-                                                <li class="cash_sales_icon3"><span></span>Cashless</li>
                                             </ul>
-                                        </div>
-                                        <div class="dashboard_current_left1">
+                                        </div> -->
+                                        <div class="dashboard_current_left1" id='linechart_machine_parent'>
                                             <canvas id="linechart_machine" height="250"></canvas>
                                         </div>
 
@@ -232,7 +231,7 @@
 
 
 <script src="js/chart.min.js"></script>
-
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 
 <script src="js/jquery.flot.cust.min.js"></script>
 <script src="js/jquery.flot.orderBar.min.js"></script>
@@ -345,27 +344,279 @@
 
 
     $('.demo_picker').daterangepicker({
+        startDate: moment().subtract(3, 'month'),
+        endDate: moment(),
+        showCustomRangeLabel: false,
         "ranges": {
-            'Today': [ moment(), moment() ],
-            'Yesterday': [ moment().subtract(1, 'days'), moment().subtract(1, 'days') ],
-            'Last 7 Days': [ moment().subtract(6, 'days'), moment() ],
             'Last 30 Days': [ moment().subtract(29, 'days'), moment() ],
-            'This Month': [ moment().startOf('month'), moment().endOf('month') ],
-            'Last Month': [ moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month') ]
+            '3 Month': [ moment().subtract(3, 'month'), moment() ],
+            '6 Month': [ moment().subtract(6, 'month'), moment() ],
         },
-    }, function (start, end, label) {
-        console.log("New date range selected: ' + start.format('YYYY-MM-DD') ' (predefined range: ' + label + ')");
+    }, async (start, end, label) => {
+        //console.log( document.getElementById('canvas_piechart'))
+        //document.getElementById('canvas_piechart').remove()
+        let isCompressed = false;
+        let dayName = null
+        const ctx = window.machineChart.createCanvas();
+        switch (label) {
+            case 'Last 30 Days':
+                dayName = '30DAYS';
+                isCompressed = true;
+                break;
+            case '3 Month':
+                dayName = 'THREE_MONTH';
+                isCompressed = true;
+                break;
+            case '6 Month':
+                dayName = 'SIX_MONTH';
+                isCompressed = true;
+                break;
+            default:
+                dayName = '30DAYS';
+                break;
+        }
+        await window.machineChart.getDateRange(start, end, dayName, isCompressed);
+        
+        window.machineChart.updateData = { start, end, dayName, isCompressed };
+       
+        // myNewChart.update();
+        //const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+        const myNewChart = new Chart(ctx, {
+            type: 'line',
+            data: window.machineChart.lineData,
+            options: window.lineOptions
+        });
     });
 
 </script>
 
 <script type="text/javascript">
 
-    $(document).ready(function () {
+(async () => {
+    const div = document.getElementById("linechart_machine_parent")
+    div.style.height = 513
+        function MachineChart(skip) {
+            this.appSales = 0;
+            this.cashSales = 0;
+            this.contactlessSales = 0;
+            this.res = null;
+            this.dates = null;
+            this.lineData = null;
+            this.skip = skip;
+            this.machineList = [];
 
+            this.getMs = function (date) {
+                return new Date(date).setHours(0, 0, 0, 0);
+            }
+            this.getCorrectDateFormat = function (date) {
+                date = new Date(date);
+                return `${ date.getFullYear() }-${ ('0' + (date.getMonth() + 1)).slice(-2) }-${ ('0' + (date.getDate())).slice(-2) }`;
+            }
+            this.fetchData = async function (name) {
+                const reqBody = JSON.stringify({
+                    "APISERVICE": "KP_AMUSEMENT_TERMINAL_CHART_DATA",
+                    "LOGIN_USER_ID": "7",
+                    "DURATION": name,
+                    "TERMINAL_NUMBER": "1350009557"
+                })
+                const response = await fetch('https://api.kwikpay.be/kwikpayapi/jsonrequest', {
+                    method: 'POST',
+                    header: 'Content-Type: application/json',
+                    body: reqBody
+                });
+                return await response.json();
+            }
+            this.createLoader = function () {
+                const parentNode = document.getElementById('linechart_machine_parent')
+                parentNode.style.position = 'relative';
+                const spinner = document.createElement('img')
+                spinner.id = 'loader'
+                spinner.style.position = 'absolute'
+                spinner.style.top = '50%'
+                spinner.style.left = '50%'
+                spinner.style.width = '50px'
+                spinner.style.height = '50px'
+                spinner.style.transform = 'translate(-50%, -50%)'
+                spinner.src = './images/spinner.gif'
+                parentNode.appendChild(spinner)
+            }
+            this.deleteLoader = function () {
+                document.getElementById('loader').remove()
+            }
+            this.getDateRange = async function (start, end, name, isCompressed) {
 
-        pageSetUp();
+                this.dates = this.generateDataObject(this.getMs(start), this.getMs(end), {
+                    APP_SALES: 0,
+                    CASH_SALES: 0,
+                    CONTACTLESS_SALES: 0
+                });
+                this.createLoader()
+                try {
+                    this.res = await this.fetchData(name);
+                    this.deleteLoader();
+                    this.createMachineList();
+                    this.displayData(isCompressed, start, true);
+                } catch (e) {
+                    this.deleteLoader();
+                    setTimeout(() => {
+                        alert('Error in Api')
+                    }, 0)
+                }
+            }
+            this.generateDataObject = function (start, end, param) {
+                let daysBetween = 0;
+                daysBetween = Math.round((end - start) / 86400000) + 1;
+                const generateData = new Array(daysBetween).fill();
+                let dates = {};
+                let currentDate = start;
+                generateData.map((el, index) => {
+                    dates = {
+                        ...dates,
+                        [this.getCorrectDateFormat(currentDate)]: param
+                    }
+                    currentDate += 86400000
+                })
+                return dates;
+            }
+            this.createMachineList = function () {
+                const map = new Map();
+                for (const item of this.res.KPRESPONSE.CHART_DATA_LIST) {
+                    if (!map.has(item.MACHINE_NUMBER)) {
+                        map.set(item.MACHINE_NUMBER, true);
+                        this.machineList.push({
+                            ...item
+                        });
+                    }
+                }
 
+            }
+            this.redoneData = function (initialData) {
+                let newDate = {};
+                const dateLength = Object.keys(this.dates).length;
+                Object.keys(this.dates).reduce((a, b, index) => {
+                        if (index % this.skip === 0 && index !== 0) {
+                            newDate = {
+                                ...newDate,
+                                [a]: {
+                                    APP_SALES: newDate[a].APP_SALES / this.skip,
+                                    CASH_SALES: newDate[a].CASH_SALES / this.skip,
+                                    CONTACTLESS_SALES: newDate[a].CONTACTLESS_SALES / this.skip
+                                }
+                            }
+                            a = b
+                        }
+                        if (index % this.skip !== 0 && dateLength - 1 === index) {
+                            newDate = {
+                                ...newDate,
+                                [a]: {
+                                    APP_SALES: newDate[a].APP_SALES / ((dateLength - 1) % this.skip),
+                                    CASH_SALES: newDate[a].CASH_SALES / ((dateLength - 1) % this.skip),
+                                    CONTACTLESS_SALES: newDate[a].CONTACTLESS_SALES / (dateLength - 1 %
+                                        this.skip)
+                                }
+                            }
+                            a = b
+                        }
+                        newDate = {
+                            ...newDate,
+                            [a]: {
+                                APP_SALES: newDate[a] === undefined ? this.dates[b].APP_SALES :
+                                    newDate[a].APP_SALES + this.dates[b].APP_SALES,
+                                CASH_SALES: newDate[a] === undefined ? this.dates[b].CASH_SALES :
+                                    newDate[a].CASH_SALES + this.dates[b].CASH_SALES,
+                                CONTACTLESS_SALES: newDate[a] === undefined ? this.dates[b]
+                                    .CONTACTLESS_SALES : newDate[a].CONTACTLESS_SALES + this.dates[b]
+                                    .CONTACTLESS_SALES
+                            }
+
+                        }
+                        return a
+                    },
+                    this.getCorrectDateFormat(this.getMs(initialData))
+                );
+                return newDate
+            }
+            this.displayData = function (isCompressed, initialData, flag) {
+                if (flag) {
+                    this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+                        Object.keys(this.dates).map((item) => {
+                            if (item === el.TXN_DATE) {
+                                return this.dates = {
+                                    ...this.dates,
+                                    [item]: {
+                                        APP_SALES: +this.dates[item].APP_SALES + +el.APP_SALES,
+                                        CASH_SALES: +this.dates[item].CASH_SALES + +el
+                                            .CASH_SALES,
+                                        CONTACTLESS_SALES: +this.dates[item]
+                                            .CONTACTLESS_SALES + +el.CONTACTLESS_SALES,
+                                    }
+                                }
+                            }
+                        })
+                    });
+                }
+                if (isCompressed) this.dates = this.redoneData(initialData);
+                this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
+                this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
+                this.contactlessSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES);
+                this.lineData = {
+                    labels: Object.keys(this.dates),
+                    datasets: [ {
+                        label: "App",
+                        backgroundColor: "rgba(0,88,30,0.1)",
+                        borderColor: "#00581E",
+                        data: this.appSales
+                    },
+                    {
+                        label: "Cash",
+                        backgroundColor: "rgba(255,178,0,0.1)",
+                        borderColor: "#FFB200",
+                        data: this.cashSales
+                    },
+                    ]
+                };
+            }
+            this.displayOneMachineData = async function (machineNumber) {
+                let machine = this.machineList.find(item => item.MACHINE_NUMBER == machineNumber);
+                this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+                    Object.keys(this.dates).map(item => {
+                        if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine.MACHINE_NUMBER) {
+                            return this.dates = {
+                                ...this.dates,
+                                [item]: {
+                                    APP_SALES: +el.APP_SALES,
+                                    CASH_SALES: +el.CASH_SALES,
+                                    CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                }
+                            }
+                        }
+                    });
+                });
+                let ctx = this.createCanvas();
+                this.displayData(false, '2020-01-01', false);
+                const myNewChart = new Chart(ctx, {
+                    type: 'line',
+                    data: window.machineChart.lineData,
+                    options: window.lineOptions
+                });
+            }
+            this.createCanvas = function () {
+                document.getElementById("linechart_machine").remove();
+                const canvas = document.createElement('canvas');
+                canvas.id = 'linechart_machine';
+                canvas.height = 250;
+                canvas.style.resize = 'both';
+                const div = document.getElementById("linechart_machine_parent").appendChild(canvas);
+                const ctx = document.getElementById('linechart_machine').getContext('2d');
+                return ctx;
+            }
+        }
+
+        const skip = 5;
+        window.machineChart = new MachineChart(skip);
+        await window.machineChart.getDateRange(moment().subtract(3, 'month'), moment(), 'THREE_MONTH', true);
+        window.machineChart.updateData = { start: moment().subtract(3, 'month'), end: moment(), dayName: 'THREE_MONTH' };
+        pageSetUp()
 
         var lineOptions = {
             ///Boolean - Whether grid lines are shown across the chart
@@ -395,11 +646,14 @@
             //Boolean - Re-draw chart on page resize
             responsive: true,
             //String - A legend template
-            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        };
+        window.lineOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
         };
 
         var lineData = {
-            labels: [ "1/11", "2/11", "3/11", "4/11", "5/11", "6/11", "7/11", "8/11", "9/11", "10/11" ],
+            labels: Object.keys(machineChart.dates),
             datasets: [
                 {
                     label: "My First dataset",
@@ -409,7 +663,7 @@
                     pointStrokeColor: "#00581E",
                     pointHighlightFill: "#00581E",
                     pointHighlightStroke: "#00581E",
-                    data: [ 250, 350, 250, 350, 250, 350, 350, 350, 250, 350 ]
+                    data: machineChart.appSales
                 },
                 {
                     label: "My Second dataset",
@@ -419,29 +673,22 @@
                     pointStrokeColor: "#FFB200",
                     pointHighlightFill: "#FFB200",
                     pointHighlightStroke: "#FFB200",
-                    data: [ 100, 200, 100, 200, 100, 200, 100, 200, 100, 200 ]
+                    data: machineChart.cashSales
                 },
-                {
-                    label: "My Second dataset",
-                    fillColor: "rgba(0,0,0,0)",
-                    strokeColor: "#8CD600",
-                    pointColor: "#8CD600",
-                    pointStrokeColor: "#8CD600",
-                    pointHighlightFill: "#8CD600",
-                    pointHighlightStroke: "#8CD600",
-                    data: [ 0, 60, 40, 60, 40, 60, 40, 60, 40, 60 ]
-                }
             ]
         };
 
-        // render chart
-        var ctx = document.getElementById("linechart_machine").getContext("2d");
-        var myNewChart = new Chart(ctx).Line(lineData, lineOptions);
+        let canvas = document.getElementById("linechart_machine");
+        var ctx = canvas.getContext("2d");
+        var myNewChart = new Chart(ctx, {
+            type: 'line',
+            data: machineChart.lineData,
+            options: window.lineOptions
+        });
+        // var ctx = document.getElementById("linechart_machine").getContext("2d");
+        // var myNewChart = new Chart(ctx).Line(lineData, lineOptions);
 
-        // BAR CHART
-
-
-    })
+    })()
 
 </script>
 <script type="text/javascript">
@@ -591,7 +838,6 @@
 <!--                //Boolean - Re-draw chart on page resize-->
 <!--                responsive: true,-->
 <!--                //String - A legend template-->
-<!--                legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"-->
 <!--            };-->
 
 <!--            var lineData = {-->
