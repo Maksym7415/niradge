@@ -28,6 +28,7 @@
             <!-- CSS
               ================================================== -->
             <link rel="stylesheet" href="css/style.css">
+            <link rel="stylesheet" href="css/custom-style.css">
             <link rel="stylesheet" href="css/font-awesome.min.css">
         
             <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -183,7 +184,7 @@
                                         <div class="dashboard_row_clear">
                                             <div class="dashboard_chartholder_left">
                                                 <div class="dashboard_piechart_left" >
-                                                    <div class="canvas_piechart">
+                                                    <div class="canvas_piechart" id = 'canvas_piechart1'>
                                                         <canvas id="pieChart1" height="360" width="360"></canvas>
                                                     </div>
                                                 </div>
@@ -208,15 +209,28 @@
         
                                             </div>
                                             <div class="dashboard_chartholder_right">
-                                                <div class="dashboard_filter_right">
-                                                    <div class="custom-select">
-                                                        <select id='dashboard_select'>
-                                                            <option value="0" selected>Filter by location </option>
-                                                            <option value="1">Filter by location </option>
-                                                            <option value="2">Filter by machine </option>
-                                                        </select>
+                                                <div>
+                                                    <!-- <div class="dashboard_filter_right ml-10">
+                                                        <div class="custom-select">
+                                                            <select  id='locations'>
+                                                                <option value="0" selected>All Location</option>
+                                                                <option value="all">All Location</option>
+                                                                <option value="New York">New York</option>
+                                                                <option value="southsea arcade">Southsea</option>
+                                                            </select>
+                                                        </div>
+                                                    </div> -->
+                                                    <div class="dashboard_filter_right">
+                                                        <div class="custom-select">
+                                                            <select id='dashboard_select'>
+                                                                <option value="0" selected>Filter by location </option>
+                                                                <option value="1">Filter by location </option>
+                                                                <option value="2">Filter by machine </option>
+                                                            </select>
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                
         
                                                 <div class="dashboard_weekly_right">
                                                     <div class="dashboard_weekly_titel1">
@@ -389,7 +403,7 @@
                 /*if the user clicks anywhere outside the select box,
                 then close all select boxes:*/
                 document.addEventListener("click", closeAllSelect);
-        
+
         
                 $('.demo_picker').daterangepicker({
         startDate: moment().subtract(29, 'days'),
@@ -405,7 +419,7 @@
         //document.getElementById('canvas_piechart').remove()
         let isCompressed = false;
         let dayName = null
-        const {ctx, pieCtx} = window.machineChart.createCanvas();
+        const {ctx, pieCtx, pieCtx1} = window.machineChart.createCanvas();
         switch (label) {
             case 'Last 30 Days':
                 dayName = '30DAYS';
@@ -430,6 +444,7 @@
         // myNewChart.update();
         const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
         const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
         // const myNewChart = new Chart(ctx, {
         //     type: 'line',
         //     data: window.machineChart.lineData,
@@ -441,6 +456,7 @@
         
         <script type="text/javascript">
             (async () => {
+              
                 function MachineChart(skip) {
                     this.appSales = 0;
                     this.cashSales = 0;
@@ -450,13 +466,14 @@
                     this.lineData = null;
                     this.skip = skip;
                     this.machineList = [];
+                    this.monthsName = ["Jan", "Feb",'Mar', "Apr", 'May', "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         
                     this.getMs = function (date) {
                         return new Date(date).setHours(0, 0, 0, 0);
                     }
                     this.getCorrectDateFormat = function (date) {
                         date = new Date(date);
-                        return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + (date.getDate())).slice(-2);
+                        return ('0' + (date.getDate())).slice(-2)  + '-' + this.monthsName[date.getMonth()] + '-' + (date.getFullYear()+ '').slice(2);
                     }
                     this.fetchData = async function (name) {
         
@@ -475,10 +492,13 @@
                         const parentNode = document.getElementById('parent_lineChart')
                         //this.createPieDiv()
                         const canvas_piechart =  document.getElementById('canvas_piechart')
+                        const canvas_piechart1 = document.getElementById('canvas_piechart1')
                         parentNode.style.position = 'relative';
                         canvas_piechart.style.position = 'relative';
+                        canvas_piechart1.style.position = 'relative';
                         const spinner = document.createElement('img')
                         const spinner1 = document.createElement('img')
+                        const spinner2 = document.createElement('img')
                         spinner1.id = 'loader1'
                         spinner1.style.position = 'absolute'
                         spinner1.style.top = '50%'
@@ -487,7 +507,16 @@
                         spinner1.style.height = '50px'
                         spinner1.style.transform = 'translate(-50%, -50%)'
                         spinner1.src = './images/spinner.gif'
+                        spinner2.id = 'loader2'
+                        spinner2.style.position = 'absolute'
+                        spinner2.style.top = '50%'
+                        spinner2.style.left = '50%'
+                        spinner2.style.width = '50px'
+                        spinner2.style.height = '50px'
+                        spinner2.style.transform = 'translate(-50%, -50%)'
+                        spinner2.src = './images/spinner.gif'
                         canvas_piechart.appendChild(spinner1)
+                        canvas_piechart1.appendChild(spinner2)
                         spinner.id = 'loader'
                         spinner.style.position = 'absolute'
                         spinner.style.top = '50%'
@@ -513,6 +542,7 @@
                     this.deleteLoader = function () {
                         document.getElementById('loader').remove()
                         document.getElementById('loader1').remove()
+                        document.getElementById('loader2').remove()
                     }
                     this.getDateRange = async function (start, end, name, isCompressed) {
         
@@ -524,7 +554,9 @@
                         this.createLoader()
                         try {
                             this.res = await this.fetchData(name);
-                            this.topFive()
+                            const filterData = this.filterByLocation()
+                            this.topFive(filterData)
+                            this.pieChartAllMachines(filterData)
                            this.deleteLoader();
                             this.createMachineList();
                             this.displayData(isCompressed, start, true);
@@ -536,48 +568,81 @@
                         }
                     }
 
-                    this.topFive = function() {
+                    this.filterByLocation = function() {
+                        console.log(12432)
+                        const fitlerData = this.res.KPRESPONSE.CHART_DATA_LIST.filter((el) => el.LOCATION_NAME === "southsea arcade")
+                        return fitlerData
+                    } 
+
+                    this.topFive = function(filterData) {
                         let result = {}
-                         this.res.KPRESPONSE.CHART_DATA_LIST.forEach((machine) => {
-                            if(machine.MACHINE_NUMBER in result) return result[machine.MACHINE_NUMBER] = {...result[machine.MACHINE_NUMBER], CASH_SALES: Number(result[machine.MACHINE_NUMBER].CASH_SALES) + Number(machine.CASH_SALES)}
+                        filterData.forEach((machine) => {
+                             
+                            if(machine.MACHINE_NUMBER in result)  {
+                                return result[machine.MACHINE_NUMBER] = {...result[machine.MACHINE_NUMBER], SUM: Number(result[machine.MACHINE_NUMBER].SUM || 0)  + Number(machine.CASH_SALES) + Number(machine.APP_SALES) + Number(machine.CONTACTLESS_SALES)}
+                            }
                             else return result[machine.MACHINE_NUMBER] = machine
                         })
-                        const arr = Object.values(result).sort((a,b) => Number(a.CASH_SALES) > Number(b.CASH_SALES)  ? -1 : 1 ).slice(0, 5)
+                        const arr = Object.values(result).sort((a,b) => Number(a.SUM) > Number(b.SUM)  ? -1 : 1 ).slice(0, 5)
                         const pieData = [
                             {
-                                value: arr[0].CASH_SALES,
+                                value: arr[0].SUM,
                                 color: "#CAF27D",
                                 highlight: "#CAF27D",
                                 //label: arr[0].MACHINE_NAME
                             },
                             {
-                                value: arr[1].CASH_SALES,
+                                value: arr[1].SUM,
                                 color: "#D9F4B0",
                                 highlight: "#D9F4B0",
                                 //label: arr[1].MACHINE_NAME
                             },
                             {
-                                value: arr[2].CASH_SALES,
+                                value: arr[2].SUM,
                                 color: "#FFFFFF",
                                 highlight: "#FFFFFF",
                                 //label: arr[2].MACHINE_NAME
                             },
                             {
-                                value: arr[3].CASH_SALES,
+                                value: arr[3].SUM,
                                 color: "#00581E",
                                 highlight: "#00581E",
                                 //label: arr[3].MACHINE_NAME
                             },
                             {
-                                value: arr[4].CASH_SALES,
+                                value: arr[4].SUM,
                                 color: "#8CD600",
                                 highlight: "#8CD600",
                                 //label: arr[4].MACHINE_NAME
                             }
                         ];
-                        console.log(arr)
                         this.pieDataMachines = pieData
                         // this.res.KPRESPONSE.CHART_DATA_LIST.sort((a,b) => Number(a.CASH_SALES) > Number(b.CASH_SALES)  ? -1 : 1 )
+                    }
+
+                    this.pieChartAllMachines = function(filterData) {
+                        let result = {
+                            APP_CONTACTLESS_SALES: 0,
+                            CASH_SALES: 0
+                        }
+                        filterData.map((machine) => {
+                            return result = {...result, APP_CONTACTLESS_SALES: Number(result['APP_CONTACTLESS_SALES']) + Number(machine.APP_SALES) + Number(machine.CONTACTLESS_SALES), CASH_SALES:Number(result['CASH_SALES']) + Number(machine.CASH_SALES)}
+                        })      
+                        const pieData = [
+                            {
+                                value: result.APP_CONTACTLESS_SALES,
+                                color: "#CAF27D",
+                                highlight: "#CAF27D",
+                                //label: arr[0].MACHINE_NAME
+                            },
+                            {
+                                value: result.CASH_SALES,
+                                color: "#D9F4B0",
+                                highlight: "#D9F4B0",
+                                //label: arr[1].MACHINE_NAME
+                            },
+                        ];
+                        this.pieDataAllMachines = pieData
                     }
 
                     this.generateDataObject = function (start, end, param) {
@@ -606,17 +671,7 @@
                             }
                         }
         
-                        let selectDOM = document.getElementById('dashboard_select');
-                        let option;
-        
-                        this.machineList.map(item => {
-                            option = document.createElement("option");
-                            option.value = item.MACHINE_NUMBER;
-                            option.text = item.MACHINE_NAME;
-                            selectDOM.add(option);
-                        });
-        
-                        //selectUpdate();
+                       
         
                     }
                     this.redoneData = function (initialData) {
@@ -688,6 +743,7 @@
                         this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                         this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
                         this.contactlessSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES);
+                        this.sumSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES + this.dates[el].APP_SALES + this.dates[el].CASH_SALES);
                         this.lineData = {
                             labels: Object.keys(this.dates),
                             datasets: [ {
@@ -719,6 +775,16 @@
                                     pointHighlightFill: "#8CD600",
                                     pointHighlightStroke: "#8CD600",
                                     data: this.contactlessSales
+                                },
+                                {
+                                    label: "My Second dataset",
+                                    fillColor: "rgba(0,0,0,0)",
+                                    strokeColor: "#e64312",
+                                    pointColor: "#e64312",
+                                    pointStrokeColor: "#e64312",
+                                    pointHighlightFill: "#e64312",
+                                    pointHighlightStroke: "#e64312",
+                                    data: this.sumSales
                                 }
                             ]
                         };
@@ -756,14 +822,21 @@
                         const div = document.getElementById("parent_lineChart").appendChild(canvas);
                         const ctx = document.getElementById('lineChart').getContext('2d');
                         document.getElementById("pieChart").remove();
+                        document.getElementById("pieChart1").remove();
                         const pieCanvas = document.createElement('canvas');
+                        const pieCanvas1 = document.createElement('canvas');
                         pieCanvas.id = 'pieChart';
                         pieCanvas.height = 180;
                         pieCanvas.width = 180;
+                        pieCanvas1.id = 'pieChart1';
+                        pieCanvas1.height = 180;
+                        pieCanvas1.width = 180;
                         //canvas.style.resize = 'both';
                         const pieDiv = document.getElementById("canvas_piechart").appendChild(pieCanvas);
+                        const pieDiv1 = document.getElementById("canvas_piechart1").appendChild(pieCanvas1);
                         const pieCtx = document.getElementById('pieChart').getContext('2d');
-                        return {ctx, pieCtx};
+                        const pieCtx1 = document.getElementById('pieChart1').getContext('2d');
+                        return {ctx, pieCtx, pieCtx1};
                     }
                 }
         
@@ -772,7 +845,7 @@
                 //document.getElementById('canvas_piechart').remove()
                 await window.machineChart.getDateRange(moment().subtract(29, 'days'), moment(), '30DAYS', true);
                 window.machineChart.updateData = { start: moment().subtract(29, 'days'), end: moment(), dayName: '30DAYS' };
-        
+                
                 pageSetUp()
         
                 //----------------------DEPRECATED (OLD VERSION OF CHART JS)-------------------
@@ -844,7 +917,6 @@
         
 
         // render chart
-        console.log(this.pieDataMachines)
         // const pieDiv = document.createElement("div");
         // pieDiv.style.position = 'relative';
         // pieDiv.className = 'canvas_piechart';
@@ -857,6 +929,23 @@
         // document.getElementById('mainPieRightDiv').appendChild(pieDiv);      
         var ctx1 = document.getElementById("pieChart").getContext("2d");
         var myNewChart1 = new Chart(ctx1).Pie(machineChart.pieDataMachines, pieOptions);
+
+        // var pieData1 = [
+        //     {
+        //         value: 5000,
+        //         color: "#00581E",
+        //         highlight: "#00581E",
+        //         label: "Grey"
+        //     },
+        //     {
+        //         value: 2000,
+        //         color: "#8CD600",
+        //         highlight: "#8CD600",
+        //         label: "Grey"
+        //     }
+        // ];
+            var ctx2 = document.getElementById("pieChart1").getContext("2d");
+            var myNewChart = new Chart(ctx2).Pie(machineChart.pieDataAllMachines, pieOptions);
         
             })()
         </script>
@@ -984,22 +1073,7 @@
         // var myNewChart = new Chart(ctx).Pie(pieData, pieOptions);
 
 
-        var pieData1 = [
-            {
-                value: 5000,
-                color: "#00581E",
-                highlight: "#00581E",
-                label: "Grey"
-            },
-            {
-                value: 2000,
-                color: "#8CD600",
-                highlight: "#8CD600",
-                label: "Grey"
-            }
-        ];
-        var ctx = document.getElementById("pieChart1").getContext("2d");
-        var myNewChart = new Chart(ctx).Pie(pieData1, pieOptions);
+        
         // END PIE CHART
 
     })
