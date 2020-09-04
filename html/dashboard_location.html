@@ -187,7 +187,15 @@
                                                     <div class="canvas_piechart" id = 'canvas_piechart1'>
                                                         <canvas id="pieChart1" height="360" width="360"></canvas>
                                                     </div>
+                                                    <div class="dashboard_machine_margin">
+                                                        <h2>Sales</h2>
+                                                        <ul class="dashboard_machine_link" style="display: flex; flex-direction: column;">
+                                                            <li class="color_bgbox5"><span></span>APP_CONTACTLESS_SALES</li>
+                                                            <li class="color_bgbox4"><span></span> CASH_SALES</li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
+
                                                 <div class="dashboard_piechart_right flex flex-column" id='mainPieRightDiv'>
                                                     <div class="canvas_piechart" id='canvas_piechart'>
                                                         <canvas id="pieChart" height="360" width="360"></canvas>
@@ -571,6 +579,12 @@
                         date = new Date(date);
                         return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + (date.getDate())).slice(-2);
                     }
+
+                    this.getChartDateFormat = function (date) {
+                        date = new Date(date);
+                        return ('0' + (date.getDate())).slice(-2) + '-' + this.monthsName[date.getMonth() + 1] + '-' +  (date.getFullYear() + '').slice(-2);
+                    }
+
                     this.fetchData = async function (name) {
         
                         const reqBody = JSON.stringify({
@@ -644,7 +658,8 @@
                         this.dates = this.generateDataObject(this.getMs(start), this.getMs(end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
-                            CONTACTLESS_SALES: 0
+                            CONTACTLESS_SALES: 0,
+                            date: ''
                         });
                         this.createLoader()
                         try {
@@ -680,6 +695,7 @@
                                             APP_SALES: +el.APP_SALES,
                                             CASH_SALES: +el.CASH_SALES,
                                             CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                            date: this.dates[item].date
                                         }
                                     }
                                 }
@@ -695,7 +711,8 @@
                         this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
-                            CONTACTLESS_SALES: 0
+                            CONTACTLESS_SALES: 0,
+                            date: ''
                         });
 
 
@@ -713,6 +730,7 @@
                                             APP_SALES: +el.APP_SALES,
                                             CASH_SALES: +el.CASH_SALES,
                                             CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                            date: this.dates[item].date
                                         }
                                     }
                                 }
@@ -727,7 +745,8 @@
                         this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
-                            CONTACTLESS_SALES: 0
+                            CONTACTLESS_SALES: 0,
+                            date: ''
                         });
 
                         }
@@ -743,6 +762,7 @@
                                             APP_SALES: +el.APP_SALES,
                                             CASH_SALES: +el.CASH_SALES,
                                             CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                            date: this.dates[item].date
                                         }
                                     }
                                 }
@@ -758,7 +778,8 @@
                         this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
-                            CONTACTLESS_SALES: 0
+                            CONTACTLESS_SALES: 0,
+                            date: ''
                         });
                         }
 
@@ -775,6 +796,7 @@
                                             APP_SALES: +el.APP_SALES,
                                             CASH_SALES: +el.CASH_SALES,
                                             CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                            date: this.dates[item].date
                                         }
                                     }
                                 }
@@ -790,7 +812,8 @@
                         this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
-                            CONTACTLESS_SALES: 0
+                            CONTACTLESS_SALES: 0,
+                            date: ''
                         });
                         }
                         else {
@@ -888,10 +911,11 @@
                         generateData.map((el, index) => {
                             dates = {
                                 ...dates,
-                                [this.getCorrectDateFormat(currentDate)]: param
+                                [this.getCorrectDateFormat(currentDate)]: {...param, date: this.getChartDateFormat(currentDate)}
                             }
                             currentDate += 86400000
                         })
+                        console.log(dates)
                         return dates;
                     }
                     this.createMachineList = function () {
@@ -921,14 +945,17 @@
                     this.redoneData = function (initialData) {
                         let newDate = {};
                         const dateLength = Object.keys(this.dates).length;
+                        console.log(this.dates)
                         Object.keys(this.dates).reduce((a, b, index) => {
                                 if (index % this.skip === 0 && index !== 0) {
+                                    console.log(newDate[a], a, this.dates[a])
                                     newDate = {
                                         ...newDate,
                                         [a]: {
                                             APP_SALES: newDate[a].APP_SALES / this.skip,
                                             CASH_SALES: newDate[a].CASH_SALES / this.skip,
-                                            CONTACTLESS_SALES: newDate[a].CONTACTLESS_SALES / this.skip
+                                            CONTACTLESS_SALES: newDate[a].CONTACTLESS_SALES / this.skip,
+                                            date: this.dates[a].date
                                         }
                                     }
                                     a = b
@@ -940,7 +967,8 @@
                                             APP_SALES: newDate[a].APP_SALES / ((dateLength - 1) % this.skip),
                                             CASH_SALES: newDate[a].CASH_SALES / ((dateLength - 1) % this.skip),
                                             CONTACTLESS_SALES: newDate[a].CONTACTLESS_SALES / (dateLength - 1 %
-                                                this.skip)
+                                                this.skip),
+                                                date: this.dates[a].date
                                         }
                                     }
                                     a = b
@@ -954,7 +982,8 @@
                                             newDate[a].CASH_SALES + this.dates[b].CASH_SALES,
                                         CONTACTLESS_SALES: newDate[a] === undefined ? this.dates[b]
                                             .CONTACTLESS_SALES : newDate[a].CONTACTLESS_SALES + this.dates[b]
-                                            .CONTACTLESS_SALES
+                                            .CONTACTLESS_SALES,
+                                            date: this.dates[a].date
                                     }
         
                                 }
@@ -978,6 +1007,7 @@
                                                     .CASH_SALES,
                                                 CONTACTLESS_SALES: +this.dates[item]
                                                     .CONTACTLESS_SALES + +el.CONTACTLESS_SALES,
+                                                date: this.dates[item].date
                                             }
                                         }
                                     }
@@ -995,6 +1025,7 @@
                                                     .CASH_SALES,
                                                 CONTACTLESS_SALES: +this.dates[item]
                                                     .CONTACTLESS_SALES + +el.CONTACTLESS_SALES,
+                                                date: this.dates[item].date
                                             }
                                         }
                                     }
@@ -1007,8 +1038,9 @@
                         this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
                         this.contactlessSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES);
                         this.sumSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES + this.dates[el].APP_SALES + this.dates[el].CASH_SALES);
+                        this.chartDates = Object.keys(this.dates).map(el => this.dates[el].date);
                         this.lineData = {
-                            labels: Object.keys(this.dates),
+                            labels: this.chartDates,
                             datasets: [ {
                                 label: "My First dataset",
                                 fillColor: "rgba(0,0,0,0)",
