@@ -210,16 +210,16 @@
                                             </div>
                                             <div class="dashboard_chartholder_right">
                                                 <div>
-                                                    <!-- <div class="dashboard_filter_right ml-10">
+                                                    <div class="dashboard_filter_right ml-10">
                                                         <div class="custom-select">
-                                                            <select  id='locations'>
+                                                            <select id='locations'>
                                                                 <option value="0" selected>All Location</option>
-                                                                <option value="all">All Location</option>
+                                                                <option value="All Location">All Location</option>
                                                                 <option value="New York">New York</option>
-                                                                <option value="southsea arcade">Southsea</option>
+                                                                <option value="southsea arcade">southsea arcade</option>
                                                             </select>
                                                         </div>
-                                                    </div> -->
+                                                    </div>
                                                     <div class="dashboard_filter_right">
                                                         <div class="custom-select">
                                                             <select id='dashboard_select'>
@@ -349,9 +349,10 @@
                         create a new DIV that will act as an option item:*/
                         c = document.createElement("DIV");
                         c.innerHTML = selElmnt.options[j].innerHTML;
-                        c.addEventListener("click", function (e) {
+                        c.addEventListener("click", async function (e) {
                             /*when an item is clicked, update the original select box,
                             and the selected item:*/
+
                             var y, i, k, s, h;
                             s = this.parentNode.parentNode.getElementsByTagName("select")[0];
                             h = this.parentNode.previousSibling;
@@ -367,7 +368,17 @@
                                     break;
                                 }
                             }
-                            h.click();
+                            let isCompressed = false;
+                            const {ctx, pieCtx, pieCtx1} = window.machineChart.createCanvas();
+                            console.log(e.target.innerHTML)
+                            await window.machineChart.getDateRange(window.start || moment().subtract(29, 'days'), window.end || moment(), window.dayName || '30DAYS', true, e.target.innerHTML);
+                            
+                            window.machineChart.updateData = { start: window.start, end: window.end, dayName: window.dayName, isCompressed };
+                        
+                            const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                            const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                            const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                            
                         });
                         b.appendChild(c);
                     }
@@ -417,27 +428,31 @@
     }, async (start, end, label) => {
         //console.log( document.getElementById('canvas_piechart'))
         //document.getElementById('canvas_piechart').remove()
+        window.start = start;
+        window.end = end;
+
         let isCompressed = false;
-        let dayName = null
+
+        window.dayName = null
         const {ctx, pieCtx, pieCtx1} = window.machineChart.createCanvas();
         switch (label) {
             case 'Last 30 Days':
-                dayName = '30DAYS';
+            window.dayName = '30DAYS';
                 isCompressed = true;
                 break;
             case '3 Month':
-                dayName = '3MONTH';
+            window.dayName = '3MONTH';
                 isCompressed = true;
                 break;
             case '6 Month':
-                dayName = '6MONTH';
+            window.dayName = '6MONTH';
                 isCompressed = true;
                 break;
             default:
-                dayName = '30DAYS';
+            window.dayName = '30DAYS';
                 break;
         }
-        await window.machineChart.getDateRange(start, end, dayName, isCompressed);
+        await window.machineChart.getDateRange(start, end, window.dayName, isCompressed, 'All Location');
         
         window.machineChart.updateData = { start, end, dayName, isCompressed };
        
@@ -452,9 +467,7 @@
         // });
     });
             });
-        </script>
-        
-        <script type="text/javascript">
+
             (async () => {
               
                 function MachineChart(skip) {
@@ -473,7 +486,7 @@
                     }
                     this.getCorrectDateFormat = function (date) {
                         date = new Date(date);
-                        return ('0' + (date.getDate())).slice(-2)  + '-' + this.monthsName[date.getMonth()] + '-' + (date.getFullYear()+ '').slice(2);
+                        return date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + (date.getDate())).slice(-2);
                     }
                     this.fetchData = async function (name) {
         
@@ -544,8 +557,7 @@
                         document.getElementById('loader1').remove()
                         document.getElementById('loader2').remove()
                     }
-                    this.getDateRange = async function (start, end, name, isCompressed) {
-        
+                    this.getDateRange = async function (start, end, name, isCompressed, filterName) {
                         this.dates = this.generateDataObject(this.getMs(start), this.getMs(end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
@@ -554,7 +566,7 @@
                         this.createLoader()
                         try {
                             this.res = await this.fetchData(name);
-                            const filterData = this.filterByLocation()
+                            const filterData = this.filterByLocation(filterName)
                             this.topFive(filterData)
                             this.pieChartAllMachines(filterData)
                            this.deleteLoader();
@@ -568,9 +580,11 @@
                         }
                     }
 
-                    this.filterByLocation = function() {
-                        console.log(12432)
-                        const fitlerData = this.res.KPRESPONSE.CHART_DATA_LIST.filter((el) => el.LOCATION_NAME === "southsea arcade")
+                    this.filterByLocation = function(filterName) {
+                        console.log(filterName)
+                        if(filterName === 'All Location') return this.res.KPRESPONSE.CHART_DATA_LIST 
+                        const fitlerData = this.res.KPRESPONSE.CHART_DATA_LIST.filter((el) => el.LOCATION_NAME === filterName)
+                        console.log(fitlerData)
                         return fitlerData
                     } 
 
@@ -676,7 +690,9 @@
                     }
                     this.redoneData = function (initialData) {
                         let newDate = {};
+                        console.log(initialData)
                         const dateLength = Object.keys(this.dates).length;
+                        console.log()
                         Object.keys(this.dates).reduce((a, b, index) => {
                                 if (index % this.skip === 0 && index !== 0) {
                                     newDate = {
@@ -739,6 +755,7 @@
                                 })
                             });
                         }
+                        console.log(this.dates)
                         if (isCompressed) this.dates = this.redoneData(initialData);
                         this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                         this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
@@ -843,7 +860,7 @@
                 const skip = 7;
                 window.machineChart = new MachineChart(skip);
                 //document.getElementById('canvas_piechart').remove()
-                await window.machineChart.getDateRange(moment().subtract(29, 'days'), moment(), '30DAYS', true);
+                await window.machineChart.getDateRange(moment().subtract(29, 'days'), moment(), '30DAYS', true, 'All Location');
                 window.machineChart.updateData = { start: moment().subtract(29, 'days'), end: moment(), dayName: '30DAYS' };
                 
                 pageSetUp()

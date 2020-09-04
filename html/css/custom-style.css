@@ -373,6 +373,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6dba06', end
 .edit_machine_formleft label {color: #464646;display: block; text-align:right;font-size: 20px;font-weight: 300;padding: 9px 40px 0 0;}
 .custom-select {position: relative;  width: 80%;}
 .custom-select select {display: none; }
+.custom-select1 {position: relative;  width: 80%;}
+.custom-select1 select {display: none; }
 .select-selected {background-color: #fff;}
 .select-selected:after {position: absolute;content:"\f078";  font-family: 'FontAwesome';top: 8px; color:#8CD600; font-size:18px;right: 12px;}
 .select-selected.select-arrow-active:after { top: 8px;  content:"\f077";}
@@ -495,6 +497,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
     width: 236px;
 }
 .dashboard_filter_right .custom-select{ width: 100%;}
+.dashboard_filter_right .custom-select1{ width: 100%;}
 .dashboard_filter_right .select-selected{border-radius: 0px;font-size: 13px; background:#fff url(../images/filterlocation_icon1.png) no-repeat 10px center; padding: 8px 10px 8px 32px;}
 .dashboard_current_left1{ width:50%; float:left;}
 .dashboard_current_right1{ width:50%; float:left;}
