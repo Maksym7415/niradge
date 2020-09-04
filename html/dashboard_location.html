@@ -209,30 +209,30 @@
         
                                             </div>
                                             <div class="dashboard_chartholder_right">
-                                                <div>
-                                                    <div class="dashboard_filter_right ml-10">
-                                                        <div class="custom-select">
+                                                <div style=' position: absolute; display: flex;width: 55vw; margin-top: 10;' id='mainSelect'>
+                                                    <div class="dashboard_select" id='machineSelect'>
+                                                        <div class="custom-select" id='machineCustomSelect'>
+                                                            <select id="machine_select">
+                                                                <option>All Machines</option>
+                                                                <option>All Machines</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="dashboard_select">
+                                                        <div class="custom-select1">
                                                             <select id='locations'>
                                                                 <option value="0" selected>All Location</option>
                                                                 <option value="All Location">All Location</option>
                                                                 <option value="New York">New York</option>
-                                                                <option value="southsea arcade">southsea arcade</option>
+                                                                <option value="southsea arcade">Southsea arcade</option>
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="dashboard_filter_right">
-                                                        <div class="custom-select">
-                                                            <select id='dashboard_select'>
-                                                                <option value="0" selected>Filter by location </option>
-                                                                <option value="1">Filter by location </option>
-                                                                <option value="2">Filter by machine </option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
+                                                    
                                                 </div>
                                                 
         
-                                                <div class="dashboard_weekly_right">
+                                                <div class="dashboard_weekly_right" style='margin-top: 60px;'>
                                                     <div class="dashboard_weekly_titel1">
                                                         <h3>Weekly Sales / Cash Drop</h3>
                                                         <ul>
@@ -324,96 +324,179 @@
             })(jQuery);
         
         
-            $(document).ready(function () {
-                $('#startDate').daterangepicker({
-                    singleDatePicker: true,
-        
-                });
-        
-        
-                var x, i, j, selElmnt, a, b, c;
-                /*look for any elements with the class "custom-select":*/
-                x = document.getElementsByClassName("custom-select");
-                for (i = 0; i < x.length; i++) {
-                    selElmnt = x[i].getElementsByTagName("select")[0];
-                    /*for each element, create a new DIV that will act as the selected item:*/
-                    a = document.createElement("DIV");
-                    a.setAttribute("class", "select-selected");
-                    a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
-                    x[i].appendChild(a);
-                    /*for each element, create a new DIV that will contain the option list:*/
-                    b = document.createElement("DIV");
-                    b.setAttribute("class", "select-items select-hide");
-                    for (j = 1; j < selElmnt.length; j++) {
-                        /*for each option in the original select element,
-                        create a new DIV that will act as an option item:*/
-                        c = document.createElement("DIV");
-                        c.innerHTML = selElmnt.options[j].innerHTML;
-                        c.addEventListener("click", async function (e) {
-                            /*when an item is clicked, update the original select box,
-                            and the selected item:*/
-
-                            var y, i, k, s, h;
-                            s = this.parentNode.parentNode.getElementsByTagName("select")[0];
-                            h = this.parentNode.previousSibling;
-                            for (i = 0; i < s.length; i++) {
-                                if (s.options[i].innerHTML == this.innerHTML) {
-                                    s.selectedIndex = i;
-                                    h.innerHTML = this.innerHTML;
-                                    y = this.parentNode.getElementsByClassName("same-as-selected");
-                                    for (k = 0; k < y.length; k++) {
-                                        y[k].removeAttribute("class");
-                                    }
-                                    this.setAttribute("class", "same-as-selected");
-                                    break;
-                                }
+     function selectRun(className) {
+        var x, i, j, selElmnt, a, b, c;
+        /*look for any elements with the class "custom-select":*/
+        x = document.getElementsByClassName(className);
+        for (i = 0; i < x.length; i++) {
+            selElmnt = x[i].getElementsByTagName("select")[0];
+            /*for each element, create a new DIV that will act as the selected item:*/
+            a = document.createElement("DIV");
+            a.setAttribute("class", "select-selected");
+            a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+            x[i].appendChild(a);
+            /*for each element, create a new DIV that will contain the option list:*/
+            b = document.createElement("DIV");
+            b.setAttribute("class", "select-items select-hide");
+            for (j = 1; j < selElmnt.length; j++) {
+                /*for each option in the original select element,
+                create a new DIV that will act as an option item:*/
+                c = document.createElement("DIV");
+                c.innerHTML = selElmnt.options[j].innerHTML;
+                c.addEventListener("click", async function (e) {
+                    /*when an item is clicked, update the original select box,
+                    and the selected item:*/
+                    var y, i, k, s, h;
+                    s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                    h = this.parentNode.previousSibling;
+                    for (i = 0; i < s.length; i++) {
+                        if (s.options[i].innerHTML == this.innerHTML) {
+                            s.selectedIndex = i;
+                            h.innerHTML = this.innerHTML;
+                            y = this.parentNode.getElementsByClassName("same-as-selected");
+                            for (k = 0; k < y.length; k++) {
+                                y[k].removeAttribute("class");
                             }
-                            let isCompressed = false;
-                            const {ctx, pieCtx, pieCtx1} = window.machineChart.createCanvas();
-                            console.log(e.target.innerHTML)
-                            await window.machineChart.getDateRange(window.start || moment().subtract(29, 'days'), window.end || moment(), window.dayName || '30DAYS', true, e.target.innerHTML);
+                            this.setAttribute("class", "same-as-selected");
+                            break;
+                        }
+                    }
+                    window.machineLocation = e.target.innerHTML === 'Southsea arcade' ? 'southsea arcade': e.target.innerHTML
+                    //h.click();
+                    window.machineChart.allFilters(window.allMachines || 'All Machines', window.machineLocation)
+                    // let isCompressed = false;
+                    // window.machineLocation = e.target.innerHTML === 'Southsea arcade' ? 'southsea arcade': e.target.innerHTML
+                    //         const {ctx, pieCtx, pieCtx1} = window.machineChart.createCanvas();
+                    //         console.log(window.allMachines)
+                    //         if(window.allMachines !== 'All Machines' && window.allMachines) {
+                    //             return window.machineChart.displayOneMachineData(window.allMachines, e.target.innerHTML === 'Southsea arcade' ? 'southsea arcade': e.target.innerHTML);
+                    //         }
+                    //         if( e.target.innerHTML === 'All Location') {
+                    //             await window.machineChart.getDateRange(window.start || moment().subtract(29, 'days'), window.end || moment(), window.dayName || '30DAYS', true, e.target.innerHTML);
+                    //         }
+                    //         else {
+                    //             return window.machineChart.displayOneMachineData(window.allMachines || 'All Machines', e.target.innerHTML === 'Southsea arcade' ? 'southsea arcade': e.target.innerHTML);
+                    //         }
                             
-                            window.machineChart.updateData = { start: window.start, end: window.end, dayName: window.dayName, isCompressed };
+                    //         window.machineChart.updateData = { start: window.start, end: window.end, dayName: window.dayName, isCompressed };
                         
-                            const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-                            const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-                            const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                    //         const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                    //         const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                    //         const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+
+                });
+                b.appendChild(c);
+            }
+            x[i].appendChild(b);
+            a.addEventListener("click", function (e) {
+                /*when the select box is clicked, close any other select boxes,
+                and open/close the current select box:*/
+                e.stopPropagation();
+                closeAllSelect(this);
+                this.nextSibling.classList.toggle("select-hide");
+                this.classList.toggle("select-arrow-active");
+            });
+        }
+
+        function closeAllSelect(elmnt) {
+            /*a function that will close all select boxes in the document,
+            except the current select box:*/
+            var x, y, i, arrNo = [];
+            x = document.getElementsByClassName("select-items");
+            y = document.getElementsByClassName("select-selected");
+            for (i = 0; i < y.length; i++) {
+                if (elmnt == y[i]) {
+                    arrNo.push(i)
+                } else {
+                    y[i].classList.remove("select-arrow-active");
+                }
+            }
+            for (i = 0; i < x.length; i++) {
+                if (arrNo.indexOf(i)) {
+                    x[i].classList.add("select-hide");
+                }
+            }
+        }
+
+        /*if the user clicks anywhere outside the select box,
+        then close all select boxes:*/
+        document.addEventListener("click", closeAllSelect);
+    }
+
+    function selectUpdate(className, isShow) {
+        var x, i, j, selElmnt, a, b, c;
+        /*look for any elements with the class "custom-select":*/
+        x = document.getElementsByClassName(className);
+        for (i = 0; i < x.length; i++) {
+            selElmnt = x[i].getElementsByTagName("select")[0];
+            b = x[i].getElementsByClassName("select-items")[0];
+            b.innerHTML = '';
+            for (j = 1; j < selElmnt.length; j++) {
+                /*for each option in the original select element,
+                create a new DIV that will act as an option item:*/
+                c = document.createElement("DIV");
+                c.innerHTML = selElmnt.options[j].innerHTML;
+                b.appendChild(c);
+
+                c.addEventListener("click", async function (e) {
+                    /*when an item is clicked, update the original select box,
+                    and the selected item:*/
+                    var y, i, k, s, h;
+                    s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                    h = this.parentNode.previousSibling;
+                    for (i = 0; i < s.length; i++) {
+                        if (s.options[i].innerHTML == this.innerHTML) {
+                            s.selectedIndex = i;
+                            h.innerHTML = this.innerHTML;
+                            y = this.parentNode.getElementsByClassName("same-as-selected");
+                            for (k = 0; k < y.length; k++) {
+                                y[k].removeAttribute("class");
+                            }
+                            this.setAttribute("class", "same-as-selected");
+                            break;
+                        }
+                    }
+                    //h.click();
+                    window.allMachines = e.target.innerHTML;
+
+                    window.machineChart.allFilters(window.allMachines, window.machineLocation || 'All Location')
+                    // if (this.innerHTML === 'All Machines') {
+                    //     const {ctx, pieCtx, pieCtx1} = window.machineChart.createCanvas();
+                    //     const { start, end, dayName, isCompressed } = window.machineChart.updateData;
+                    //     await window.machineChart.getDateRange(window.start || moment().subtract(29, 'days'), window.end || moment(), window.dayName || '30DAYS', true, window.machineLocation || "All Location");
+                    //     const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                    //     const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                    //     const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                    //     return;
+                    // }
+                    // if(className === 'custom-select1') {
+                    //     let isCompressed = false;
+                    //         const {ctx, pieCtx, pieCtx1} = window.machineChart.createCanvas();
+                    //         selectRun('custom-select');
+                    //         selectRun('custom-select1');
+                    //         await window.machineChart.getDateRange(window.start || moment().subtract(29, 'days'), window.end || moment(), window.dayName || '30DAYS', true, e.target.innerHTML === 'Southsea arcade' ? 'southsea arcade': e.target.innerHTML);
                             
-                        });
-                        b.appendChild(c);
-                    }
-                    x[i].appendChild(b);
-                    a.addEventListener("click", function (e) {
-                        /*when the select box is clicked, close any other select boxes,
-                        and open/close the current select box:*/
-                        e.stopPropagation();
-                        closeAllSelect(this);
-                        this.nextSibling.classList.toggle("select-hide");
-                        this.classList.toggle("select-arrow-active");
-                    });
-                }
-                function closeAllSelect(elmnt) {
-                    /*a function that will close all select boxes in the document,
-                    except the current select box:*/
-                    var x, y, i, arrNo = [];
-                    x = document.getElementsByClassName("select-items");
-                    y = document.getElementsByClassName("select-selected");
-                    for (i = 0; i < y.length; i++) {
-                        if (elmnt == y[i]) {
-                            arrNo.push(i)
-                        } else {
-                            y[i].classList.remove("select-arrow-active");
-                        }
-                    }
-                    for (i = 0; i < x.length; i++) {
-                        if (arrNo.indexOf(i)) {
-                            x[i].classList.add("select-hide");
-                        }
-                    }
-                }
-                /*if the user clicks anywhere outside the select box,
-                then close all select boxes:*/
-                document.addEventListener("click", closeAllSelect);
+                    //         window.machineChart.updateData = { start: window.start, end: window.end, dayName: window.dayName, isCompressed };
+                        
+                    //         const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                    //         const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                    //         const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                    // }else {
+                    //     window.machineChart.displayOneMachineData(s.options[i].getAttribute("value"),  window.machineLocation);
+                    // }
+                    
+                    // selectUpdate('custom-select');
+                    // selectUpdate('custom-select1');
+
+
+                });
+            }
+        }
+    }
+
+    selectRun('custom-select');
+    selectRun('custom-select1');
+
 
         
                 $('.demo_picker').daterangepicker({
@@ -452,21 +535,20 @@
             window.dayName = '30DAYS';
                 break;
         }
-        await window.machineChart.getDateRange(start, end, window.dayName, isCompressed, 'All Location');
+        await window.machineChart.getDateRange(start, end, window.dayName, isCompressed, 'All Location', true);
         
         window.machineChart.updateData = { start, end, dayName, isCompressed };
        
         // myNewChart.update();
-        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+        // const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+        // const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+        // const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
         // const myNewChart = new Chart(ctx, {
         //     type: 'line',
         //     data: window.machineChart.lineData,
         //     options: window.lineOptions
         // });
     });
-            });
 
             (async () => {
               
@@ -477,6 +559,7 @@
                     this.res = null;
                     this.dates = null;
                     this.lineData = null;
+                    this.allData = null;
                     this.skip = skip;
                     this.machineList = [];
                     this.monthsName = ["Jan", "Feb",'Mar', "Apr", 'May', "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -557,7 +640,7 @@
                         document.getElementById('loader1').remove()
                         document.getElementById('loader2').remove()
                     }
-                    this.getDateRange = async function (start, end, name, isCompressed, filterName) {
+                    this.getDateRange = async function (start, end, name, isCompressed, filterName, isAllFilters) {
                         this.dates = this.generateDataObject(this.getMs(start), this.getMs(end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
@@ -566,11 +649,17 @@
                         this.createLoader()
                         try {
                             this.res = await this.fetchData(name);
+                            this.allData = this.res.KPRESPONSE.CHART_DATA_LIST
+                            
+
+                           this.deleteLoader();
+                           this.createMachineList();
+                            if(isAllFilters) {
+                             return  this.allFilters(window.allMachines || 'All Machines', window.machineLocation || 'All Location', start)
+                            }
                             const filterData = this.filterByLocation(filterName)
                             this.topFive(filterData)
                             this.pieChartAllMachines(filterData)
-                           this.deleteLoader();
-                            this.createMachineList();
                             this.displayData(isCompressed, start, true);
                         } catch (e) {
                            this.deleteLoader();
@@ -579,12 +668,143 @@
                             }, 0)
                         }
                     }
+                    this.allFilters = function(machineFilters, locationFiltes) {
+                        console.log(machineFilters, locationFiltes)
+                        if((machineFilters === 'All Machines' || machineFilters === undefined) && (locationFiltes === undefined || locationFiltes === 'All Location') ) {
+                            this.allData.map((el) => {
+                            Object.keys(this.dates).map(item => {
+                                if (item === el.TXN_DATE) {
+                                    return this.dates = {
+                                        ...this.dates,
+                                        [item]: {
+                                            APP_SALES: +el.APP_SALES,
+                                            CASH_SALES: +el.CASH_SALES,
+                                            CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                        let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
+                        this.displayData(true, new Date(window.start), true);
+                        this.topFive(this.allData)
+                        this.pieChartAllMachines(this.allData)
+                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
+                            APP_SALES: 0,
+                            CASH_SALES: 0,
+                            CONTACTLESS_SALES: 0
+                        });
+
+
+                        }
+
+
+                        else if(locationFiltes === 'All Location' && machineFilters !== 'All Machines') {
+                            let machine = this.machineList.filter(item => item.MACHINE_NUMBER == machineFilters);
+                            this.allData.map((el) => {
+                            Object.keys(this.dates).map(item => {
+                                if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine[0].MACHINE_NUMBER) {
+                                    return this.dates = {
+                                        ...this.dates,
+                                        [item]: {
+                                            APP_SALES: +el.APP_SALES,
+                                            CASH_SALES: +el.CASH_SALES,
+                                            CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                        let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
+                        this.displayData(true, new Date(window.start) , false, true);
+                        this.pieChartAllMachines(this.allData.filter(item => item.MACHINE_NUMBER == machineFilters))
+                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
+                            APP_SALES: 0,
+                            CASH_SALES: 0,
+                            CONTACTLESS_SALES: 0
+                        });
+
+                        }
+
+                        else if(locationFiltes !== 'All Location' && machineFilters === 'All Machines') {
+                        const fitlerData =  this.allData.filter((el) => el.LOCATION_NAME === locationFiltes)
+                        fitlerData.map((el) => {
+                            Object.keys(this.dates).map(item => {
+                                if (item === el.TXN_DATE) {
+                                    return this.dates = {
+                                        ...this.dates,
+                                        [item]: {
+                                            APP_SALES: +el.APP_SALES,
+                                            CASH_SALES: +el.CASH_SALES,
+                                            CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                        let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
+                        this.displayData(true, window.start , false, true);
+                        this.topFive(fitlerData)
+                        this.pieChartAllMachines(fitlerData)
+                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
+                            APP_SALES: 0,
+                            CASH_SALES: 0,
+                            CONTACTLESS_SALES: 0
+                        });
+                        }
+
+
+                        else if(locationFiltes !== 'All Location' && machineFilters !== 'All Machines') {
+                            const fitlerLocationData = this.allData.filter((el) => el.LOCATION_NAME === locationFiltes)
+                            let machine = this.machineList.filter(item => item.MACHINE_NUMBER == machineFilters);
+                            fitlerLocationData.map((el) => {
+                            Object.keys(this.dates).map(item => {
+                                if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine[0].MACHINE_NUMBER) {
+                                    return this.dates = {
+                                        ...this.dates,
+                                        [item]: {
+                                            APP_SALES: +el.APP_SALES,
+                                            CASH_SALES: +el.CASH_SALES,
+                                            CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                        }
+                                    }
+                                }
+                            });
+                        });
+
+                        let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
+                        this.displayData(true, window.start , false, true);
+                        this.pieChartAllMachines(fitlerLocationData.filter(item => item.MACHINE_NUMBER === machineFilters))
+                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
+                            APP_SALES: 0,
+                            CASH_SALES: 0,
+                            CONTACTLESS_SALES: 0
+                        });
+                        }
+                        else {
+                                console.log('ERRR')
+                        }
+                    }
+
+
+
+
 
                     this.filterByLocation = function(filterName) {
-                        console.log(filterName)
                         if(filterName === 'All Location') return this.res.KPRESPONSE.CHART_DATA_LIST 
                         const fitlerData = this.res.KPRESPONSE.CHART_DATA_LIST.filter((el) => el.LOCATION_NAME === filterName)
-                        console.log(fitlerData)
                         return fitlerData
                     } 
 
@@ -685,14 +905,22 @@
                             }
                         }
         
-                       
+                        let selectDOM = document.getElementById('machine_select');
+                        let option;
+
+                        this.machineList.map(item => {
+                            option = document.createElement("option");
+                            option.value = item.MACHINE_NUMBER;
+                            option.text = item.MACHINE_NUMBER;
+                            selectDOM.add(option);
+                        });
+
+                selectUpdate('custom-select');
         
                     }
                     this.redoneData = function (initialData) {
                         let newDate = {};
-                        console.log(initialData)
                         const dateLength = Object.keys(this.dates).length;
-                        console.log()
                         Object.keys(this.dates).reduce((a, b, index) => {
                                 if (index % this.skip === 0 && index !== 0) {
                                     newDate = {
@@ -736,9 +964,10 @@
                         );
                         return newDate
                     }
-                    this.displayData = function (isCompressed, initialData, flag) {
+                    this.displayData = function (isCompressed, initialData, flag, isAllData) {
                         if (flag) {
-                            this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+                            if(isAllData) {
+                                this.allData.map((el) => {
                                 Object.keys(this.dates).map((item) => {
                                     if (item === el.TXN_DATE) {
                                         return this.dates = {
@@ -754,8 +983,25 @@
                                     }
                                 })
                             });
+                            }else {
+                                this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+                                Object.keys(this.dates).map((item) => {
+                                    if (item === el.TXN_DATE) {
+                                        return this.dates = {
+                                            ...this.dates,
+                                            [item]: {
+                                                APP_SALES: +this.dates[item].APP_SALES + +el.APP_SALES,
+                                                CASH_SALES: +this.dates[item].CASH_SALES + +el
+                                                    .CASH_SALES,
+                                                CONTACTLESS_SALES: +this.dates[item]
+                                                    .CONTACTLESS_SALES + +el.CONTACTLESS_SALES,
+                                            }
+                                        }
+                                    }
+                                })
+                            });
+                            }
                         }
-                        console.log(this.dates)
                         if (isCompressed) this.dates = this.redoneData(initialData);
                         this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                         this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
@@ -806,11 +1052,15 @@
                             ]
                         };
                     }
-                    this.displayOneMachineData = async function (machineNumber) {
-                        let machine = this.machineList.find(item => item.MACHINE_NUMBER == machineNumber);
-                        this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+                    this.displayOneMachineData = async function (machineNumber, location) {
+                        let machine;
+                        if(!location) {
+                            machine =  this.machineList.filter(item => item.MACHINE_NUMBER == machineNumber);
+                        }else if(machineNumber === 'All Machines') {
+                            machine  = this.res.KPRESPONSE.CHART_DATA_LIST.filter((el) => el.LOCATION_NAME === location)
+                            machine.map((el) => {
                             Object.keys(this.dates).map(item => {
-                                if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine.MACHINE_NUMBER) {
+                                if (item === el.TXN_DATE) {
                                     return this.dates = {
                                         ...this.dates,
                                         [item]: {
@@ -822,13 +1072,35 @@
                                 }
                             });
                         });
-                        let { ctx } = this.createCanvas();
+                        let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
                         this.displayData(false, '2020-01-01', false);
-                        const myNewChart = new Chart(ctx, {
-                            type: 'line',
-                            data: window.machineChart.lineData,
-                            options: window.lineOptions
+                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        return;
+                        }
+                        else {
+                            machine = this.machineList.filter(item => item.MACHINE_NUMBER == machineNumber && location === item.LOCATION_NAME);
+                        }
+                        this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+                            Object.keys(this.dates).map(item => {
+                                if (machine.length && item === el.TXN_DATE && el.MACHINE_NUMBER === machine[0].MACHINE_NUMBER) {
+                                    return this.dates = {
+                                        ...this.dates,
+                                        [item]: {
+                                            APP_SALES: +el.APP_SALES,
+                                            CASH_SALES: +el.CASH_SALES,
+                                            CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+                                        }
+                                    }
+                                }
+                            });
                         });
+                        let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
+                        this.displayData(false, '2020-01-01', false);
+                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
                     }
                     this.createCanvas = function () {
                         document.getElementById("lineChart").remove();

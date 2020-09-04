@@ -381,7 +381,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6dba06', end
 .select-items div,.select-selected {color:#918F8F;padding: 5px 16px;cursor: pointer;user-select: none;}
 .select-selected {padding: 8px 10px; color:#5D5D5D; font-size:18px; border:1px solid #d6d6d6;  border-radius: 10px;}
 .select-selected.select-arrow-active { border:1px solid #292929;}
-.select-items { box-shadow: 0 5px 10px #cecece;position: absolute;  border-radius: 10px;background-color: #fff;top: 100%;left: 0; overflow:hidden;right: 0;z-index: 99;}
+.select-items { box-shadow: 0 5px 10px #cecece;position: absolute;  border-radius: 10px;background-color: #fff;top: 100%;left: 0;right: 0;z-index: 99;}
 .select-hide {display: none;}
 .select-items div:hover, .same-as-selected {background-color: rgba(0, 0, 0, 0.1);}
 .edit_machine_formrow { margin: 0 0 25px;display: flex;}
