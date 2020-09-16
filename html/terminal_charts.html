@@ -179,20 +179,10 @@
 
                                 </div>
                                 <div class="vending_machin2_right">
-                                    <div class="dashboard_weekly_right machinechart_right2">
-                                        <div class="dashboard_weekly_titel1">
-                                            <ul>
-                                                <li class="cash_sales_icon1"><span></span>Downtime</li>
-                                                <li class="cash_sales_icon2"><span></span>Uptime</li>
-                                            </ul>
-                                            <p>* Maximum range can be 7days</p>
-                                        </div>
-
-                                        <div class="dashboard_current_right1">
-
-
-                                            <div id="bar-chart-h" class="chart_width_bar"></div>
-                                        </div>
+                                   
+                                    <div class="dashboard_weekly_right machinechart_right2" id = 'machineBarChartParent'>
+                                            <canvas id="machineBarChart" height="210"></canvas>
+                                    
                                     </div>
 
                                 </div>
@@ -357,7 +347,7 @@
         //document.getElementById('canvas_piechart').remove()
         let isCompressed = false;
         let dayName = null
-        const ctx = window.machineChart.createCanvas();
+        const {ctx, ctx1} = window.machineChart.createCanvas();
         switch (label) {
             case 'Last 30 Days':
                 dayName = '30DAYS';
@@ -381,13 +371,62 @@
        
         // myNewChart.update();
         //const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+        console.log({...window.hzBarOptions, ...window.hzBarOptions.scales, ...window.hzBarOptions.scales.xAxes[0], ...window.hzBarOptions.scales.xAxes[0].ticks, max: window.machineChart.machineLineData[0].CONTACTLESS_SALES + window.machineChart.machineLineData[1].CONTACTLESS_SALES})
         const myNewChart = new Chart(ctx, {
             type: 'line',
             data: window.machineChart.lineData,
             options: window.lineOptions
         });
-    });
+        var myHzBarChart = new Chart(ctx1, {
+        type: 'horizontalBar',
+        data: {
+        labels: ['Machine contactless sales'],
+        datasets: [{
+            label: window.machineChart.machineLineData[0].MACHINE_NAME,
+            data: [window.machineChart.machineLineData[0].CONTACTLESS_SALES,],
+            backgroundColor: [
+                'rgba(210, 7, 7, 1)',
+        
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
 
+            ],
+            borderWidth: 2,
+        
+        },
+        {
+            label: window.machineChart.machineLineData[1].MACHINE_NAME,
+            data: [window.machineChart.machineLineData[1].CONTACTLESS_SALES, ],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.2)',
+        
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)',
+            ],
+            borderWidth: 2,
+        
+        },
+        {
+            label: 'Both',
+            data: [window.machineChart.machineLineData[0].CONTACTLESS_SALES + window.machineChart.machineLineData[1].CONTACTLESS_SALES],
+            backgroundColor: [
+                'rgba(255, 206, 86, 0.2)',
+        
+            ],
+            borderColor: [
+                'rgba(255, 206, 86, 1)',
+            ],
+            borderWidth: 2,
+        
+        }
+        ]
+    },
+    options: {...window.hzBarOptions, scales: {  ...window.hzBarOptions.scales, xAxes: [{ ...window.hzBarOptions.scales.xAxes[0], ticks: {...window.hzBarOptions.scales.xAxes[0].ticks, max: window.machineChart.machineLineData[0].CONTACTLESS_SALES + window.machineChart.machineLineData[1].CONTACTLESS_SALES}}]}}
+});
+    });
+    
 </script>
 
 <script type="text/javascript">
@@ -453,6 +492,7 @@
                 this.createLoader()
                 try {
                     this.res = await this.fetchData(name);
+                    this.machineContactless(this.res.KPRESPONSE.CHART_DATA_LIST)
                     this.deleteLoader();
                     this.createMachineList();
                     this.displayData(isCompressed, start, true);
@@ -600,6 +640,17 @@
                     options: window.lineOptions
                 });
             }
+            this.machineContactless = function(filterData) {
+                let result = {}
+                filterData.forEach((machine) => {             
+                    if(machine.MACHINE_NUMBER in result)  {
+                        return result[machine.MACHINE_NUMBER] = {...result[machine.MACHINE_NUMBER], CONTACTLESS_SALES: Number(result[machine.MACHINE_NUMBER].CONTACTLESS_SALES || 0) + Number(machine.CONTACTLESS_SALES)}
+                    }
+                    else return result[machine.MACHINE_NUMBER] = machine
+                })
+                this.machineLineData = Object.values(result)
+            }
+
             this.createCanvas = function () {
                 document.getElementById("linechart_machine").remove();
                 const canvas = document.createElement('canvas');
@@ -608,7 +659,16 @@
                 canvas.style.resize = 'both';
                 const div = document.getElementById("linechart_machine_parent").appendChild(canvas);
                 const ctx = document.getElementById('linechart_machine').getContext('2d');
-                return ctx;
+
+                document.getElementById("machineBarChart").remove();
+                const canvas1 = document.createElement('canvas');
+                canvas1.id = 'machineBarChart';
+                canvas1.height = 210;
+                canvas1.style.resize = 'both';
+                const div1 = document.getElementById("machineBarChartParent").appendChild(canvas1);
+                const ctx1 = document.getElementById('machineBarChart').getContext('2d');
+
+                return {ctx, ctx1};
             }
         }
 
@@ -678,6 +738,94 @@
             ]
         };
 
+        window.hzBarOptions = {
+        legend: {
+            position: "top",
+            display: true,
+            labels: {
+                    fontColor: 'rgb(255, 99, 132)'
+                }
+        },
+            scales: {
+            yAxes: [{
+                gridLines: {
+                drawTicks: false,
+                diaplay: false,
+                color: "transparent",
+                zeroLineColor: "transparent"
+                },
+                ticks: {
+                beginAtZero: true,
+                padding: 15,
+                fontSize: 16,
+                },
+                barPercentage: 0.7,
+                categoryPercentage: 1,
+            
+            }],
+            xAxes: [{
+                gridLines: {
+                diaplay: false,
+                color: "transparent",
+                        zeroLineColor: "transparent"
+                },
+                ticks: {
+                padding: 15,
+                beginAtZero: true,
+                max: machineChart.machineLineData[0].CONTACTLESS_SALES + machineChart.machineLineData[1].CONTACTLESS_SALES,
+                min: 0,
+                stepSize: 10,
+                //   callback: function(value, index, values) {
+                //     return value / 1 + '%';
+                //   }
+                }
+            }]
+            }
+        
+            }
+
+             window.hzBarDataSet = [{
+            label: machineChart.machineLineData[0].MACHINE_NAME,
+            data: [machineChart.machineLineData[0].CONTACTLESS_SALES,],
+            backgroundColor: [
+                'rgba(210, 7, 7, 1)',
+        
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+
+            ],
+            borderWidth: 2,
+        
+        },
+        {
+            label: machineChart.machineLineData[1].MACHINE_NAME,
+            data: [machineChart.machineLineData[1].CONTACTLESS_SALES, ],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.2)',
+        
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)',
+            ],
+            borderWidth: 2,
+        
+        },
+        {
+            label: 'Both',
+            data: [machineChart.machineLineData[0].CONTACTLESS_SALES + machineChart.machineLineData[1].CONTACTLESS_SALES],
+            backgroundColor: [
+                'rgba(255, 206, 86, 0.2)',
+        
+            ],
+            borderColor: [
+                'rgba(255, 206, 86, 1)',
+            ],
+            borderWidth: 2,
+        
+        }
+        ]
+
         let canvas = document.getElementById("linechart_machine");
         var ctx = canvas.getContext("2d");
         var myNewChart = new Chart(ctx, {
@@ -685,8 +833,15 @@
             data: machineChart.lineData,
             options: window.lineOptions
         });
-        // var ctx = document.getElementById("linechart_machine").getContext("2d");
-        // var myNewChart = new Chart(ctx).Line(lineData, lineOptions);
+        var ctx1 = document.getElementById('machineBarChart').getContext('2d');
+        var myChart = new Chart(ctx1, {
+        type: 'horizontalBar',
+        data: {
+        labels: ['Machine contactless sales'],
+        datasets: window.hzBarDataSet
+    },
+    options: window.hzBarOptions
+});
 
     })()
 
@@ -713,68 +868,68 @@
 
         // DO NOT REMOVE : GLOBAL FUNCTIONS!
         pageSetUp();
-
         /* sales chart */
 
 
         /* end bar chart */
 
         /* bar-chart-h */
-        if ($("#bar-chart-h").length) {
-            //Display horizontal graph
-            var d1_h = [];
-            for (var i = 0; i <= 3; i += 1)
-                d1_h.push([ parseInt(Math.random() * 30), i ]);
+        // if ($("#bar-chart-h").length) {
+        //     //Display horizontal graph
+        //     var d1_h = [];
+        //     for (var i = 0; i <= 3; i += 1)
+        //         d1_h.push([ parseInt(Math.random() * 30), i ]);
 
-            var d2_h = [];
-            for (var i = 0; i <= 3; i += 1)
-                d2_h.push([ parseInt(Math.random() * 30), i ]);
+        //     var d2_h = [];
+        //     for (var i = 0; i <= 3; i += 1)
+        //         d2_h.push([ parseInt(Math.random() * 30), i ]);
 
-            var d3_h = [];
-            for (var i = 0; i <= 3; i += 1)
-                d3_h.push([ parseInt(Math.random() * 30), i ]);
+        //     var d3_h = [];
+        //     for (var i = 0; i <= 3; i += 1)
+        //         d3_h.push([ parseInt(Math.random() * 30), i ]);
 
-            var ds_h = new Array();
-            ds_h.push({
-                data: d1_h,
-                bars: {
-                    horizontal: true,
-                    show: true,
-                    barWidth: 0.2,
-                    order: 1,
-                }
-            });
+        //     var ds_h = new Array();
+        //     ds_h.push({
+        //         data: d1_h,
+        //         bars: {
+        //             horizontal: true,
+        //             show: true,
+        //             barWidth: 0.2,
+        //             order: 1,
+        //         }
+        //     });
 
-            ds_h.push({
-                data: d3_h,
-                bars: {
-                    horizontal: true,
-                    show: true,
-                    barWidth: 0.2,
-                    order: 3
-                }
-            });
+        //     ds_h.push({
+        //         data: d3_h,
+        //         bars: {
+        //             horizontal: true,
+        //             show: true,
+        //             barWidth: 0.2,
+        //             order: 3
+        //         }
+        //     });
+            
 
-            // display graph
-            $.plot($("#bar-chart-h"), ds_h, {
-                colors: [ $chrt_second, $chrt_fourth, "#8CD600", "#8CD600" ],
-                grid: {
-                    show: true,
-                    hoverable: true,
-                    clickable: true,
-                    tickColor: $chrt_border_color,
-                    borderWidth: 0,
-                    borderColor: $chrt_border_color,
-                },
-                legend: true,
-                tooltip: true,
-                tooltipOpts: {
-                    content: "<b>%x</b> = <span>%y</span>",
-                    defaultTheme: false
-                }
-            });
+        //     // display graph
+        //     $.plot($("#bar-chart-h"), ds_h, {
+        //         colors: [ $chrt_second, $chrt_fourth, "#8CD600", "#8CD600" ],
+        //         grid: {
+        //             show: true,
+        //             hoverable: true,
+        //             clickable: true,
+        //             tickColor: $chrt_border_color,
+        //             borderWidth: 0,
+        //             borderColor: $chrt_border_color,
+        //         },
+        //         legend: true,
+        //         tooltip: true,
+        //         tooltipOpts: {
+        //             content: "<b>%x</b> = <span>%y</span>",
+        //             defaultTheme: false
+        //         }
+        //     });
 
-        }
+        // }
 
         /* end bar-chart-h */
 
