@@ -490,6 +490,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
 .dashboard_machine_link li.color_bgbox3 span{background:#00581E;}
 .dashboard_machine_link li.color_bgbox4 span{background:#D9F4B0;}
 .dashboard_machine_link li.color_bgbox5 span{background:#CAF27D;}
+.dashboard_machine_link li.color_bgbox6 span{background:#7fff00;}
 
 .dashboard_filter_right {
     float: right;
@@ -891,6 +892,11 @@ input[type="checkbox"].styled:checked + label:after {
 .w-auto {
     width: auto;
 }
+
+.w-full {
+    width: 100%;
+}
+
 .dashboard_select{
     width: 90%;
 }

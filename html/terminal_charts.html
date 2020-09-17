@@ -160,17 +160,27 @@
                         <div class="clear"></div>
                         <div class="new_location_form1">
 
-                            <div class="vendingmachine_row_clear2">
-                                <div class="vending_machin2_left">
-
-
-                                    <div class="dashboard_weekly_right">
-                                        <!-- <div class="dashboard_weekly_titel1">
-                                            <ul>
-                                                <li class="cash_sales_icon1"><span></span>App</li>
-                                                <li class="cash_sales_icon2"><span></span>Cash</li>
-                                            </ul>
-                                        </div> -->
+                            <div class="vendingmachine_row_clear2 " style='display: flex; flex-direction: column;' >
+                                <div class="vending_machin2_left " style = 'margin-bottom: 30px; width: 100%'>
+                                   
+                                    <div class="dashboard_weekly_right " >
+                                        <div class="dashboard_weekly_titel1" style='width: 45%'>
+                                            <div style="
+                                            width: 330px;
+                                            padding: 25px;
+                                            border: 1px solid #8CD600;
+                                            border-radius: 26px;
+                                        ">
+                                                <p style="text-align: start" id='terminalLocation'></p>
+                                                <div style="width: 176px">
+                                                <span>Machine mapped: </span>
+                                                <span id = 'machineName1'> </span>
+                                                <p id = 'machineNumber1'  style="    text-align: end;"></p>
+                                                <p id = 'machineName2' style="    text-align: end;"></p>
+                                                <p id = 'machineNumber2' style="    text-align: end;"></p>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="dashboard_current_left1" id='linechart_machine_parent'>
                                             <canvas id="linechart_machine" height="250"></canvas>
                                         </div>
@@ -178,10 +188,10 @@
                                     </div>
 
                                 </div>
-                                <div class="vending_machin2_right">
+                                <div class="vending_machin2_right" style='width: 100%;'>
                                    
                                     <div class="dashboard_weekly_right machinechart_right2" id = 'machineBarChartParent'>
-                                            <canvas id="machineBarChart" height="210"></canvas>
+                                            <canvas id="machineBarChart" height="300"></canvas>
                                     
                                     </div>
 
@@ -371,7 +381,6 @@
        
         // myNewChart.update();
         //const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-        console.log({...window.hzBarOptions, ...window.hzBarOptions.scales, ...window.hzBarOptions.scales.xAxes[0], ...window.hzBarOptions.scales.xAxes[0].ticks, max: window.machineChart.machineLineData[0].CONTACTLESS_SALES + window.machineChart.machineLineData[1].CONTACTLESS_SALES})
         const myNewChart = new Chart(ctx, {
             type: 'line',
             data: window.machineChart.lineData,
@@ -380,7 +389,7 @@
         var myHzBarChart = new Chart(ctx1, {
         type: 'horizontalBar',
         data: {
-        labels: ['Machine contactless sales'],
+        labels:  ['Machine contactless sales'],
         datasets: [{
             label: window.machineChart.machineLineData[0].MACHINE_NAME,
             data: [window.machineChart.machineLineData[0].CONTACTLESS_SALES,],
@@ -493,6 +502,31 @@
                 try {
                     this.res = await this.fetchData(name);
                     this.machineContactless(this.res.KPRESPONSE.CHART_DATA_LIST)
+                    const removeDublicate = (state) => {
+                        const result = [];
+                        const map = new Map();
+                            for (const item of this.res.KPRESPONSE.CHART_DATA_LIST) {
+                                if(!map.has(item.MACHINE_NUMBER)){
+                                    map.set(item.MACHINE_NUMBER, true);
+                                    result.push({
+                                        ...item
+                                    });
+                                }
+                            }
+                        return result
+                    }
+
+                    const machines = removeDublicate()
+                    const terminalLocation = document.getElementById('terminalLocation')
+                    const machineName1 = document.getElementById('machineName1')
+                    const machineName2 = document.getElementById('machineName2')
+                    const machineNumber1 = document.getElementById('machineNumber1')
+                    const machineNumber2 = document.getElementById('machineNumber2')
+                    terminalLocation.innerText = 'Terminal Location: ' + machines[0].LOCATION_NAME
+                    machineName1.innerText = machines[0].MACHINE_NAME 
+                    machineName2.innerText = machines[1].MACHINE_NAME
+                    machineNumber1.innerText = machines[0].MACHINE_NUMBER
+                    machineNumber2.innerText = machines[1].MACHINE_NUMBER
                     this.deleteLoader();
                     this.createMachineList();
                     this.displayData(isCompressed, start, true);
@@ -578,7 +612,9 @@
             }
             this.displayData = function (isCompressed, initialData, flag) {
                 if (flag) {
+                    this.machineLabel = [];
                     this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+                        this.machineLabel.push(el.MACHINE_NUMBER)
                         Object.keys(this.dates).map((item) => {
                             if (item === el.TXN_DATE) {
                                 return this.dates = {
@@ -598,48 +634,50 @@
                 if (isCompressed) this.dates = this.redoneData(initialData);
                 this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                 this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
-                this.contactlessSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES);
+                this.contactlessSales = Object.keys(this.dates).map(el => {
+                    return this.dates[el].CONTACTLESS_SALES
+                });
                 this.lineData = {
                     labels: Object.keys(this.dates),
                     datasets: [ {
-                        label: "App",
+                        label: 'Contactless sales',
                         backgroundColor: "rgba(0,88,30,0.1)",
                         borderColor: "#00581E",
-                        data: this.appSales
+                        data: this.contactlessSales
                     },
-                    {
-                        label: "Cash",
-                        backgroundColor: "rgba(255,178,0,0.1)",
-                        borderColor: "#FFB200",
-                        data: this.cashSales
-                    },
+                    // {
+                    //     label: "Cash",
+                    //     backgroundColor: "rgba(255,178,0,0.1)",
+                    //     borderColor: "#FFB200",
+                    //     data: this.cashSales
+                    // },
                     ]
                 };
             }
-            this.displayOneMachineData = async function (machineNumber) {
-                let machine = this.machineList.find(item => item.MACHINE_NUMBER == machineNumber);
-                this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
-                    Object.keys(this.dates).map(item => {
-                        if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine.MACHINE_NUMBER) {
-                            return this.dates = {
-                                ...this.dates,
-                                [item]: {
-                                    APP_SALES: +el.APP_SALES,
-                                    CASH_SALES: +el.CASH_SALES,
-                                    CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
-                                }
-                            }
-                        }
-                    });
-                });
-                let ctx = this.createCanvas();
-                this.displayData(false, '2020-01-01', false);
-                const myNewChart = new Chart(ctx, {
-                    type: 'line',
-                    data: window.machineChart.lineData,
-                    options: window.lineOptions
-                });
-            }
+            // this.displayTheTerminalData = async function (terminal) {
+            //     let terminal = this.machineList.find(item => item.TERMINAL_NUMBER == '1350009557');
+            //     this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
+            //         Object.keys(this.dates).map(item => {
+            //             if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine.MACHINE_NUMBER) {
+            //                 return this.dates = {
+            //                     ...this.dates,
+            //                     [item]: {
+            //                         APP_SALES: +el.APP_SALES,
+            //                         CASH_SALES: +el.CASH_SALES,
+            //                         CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
+            //                     }
+            //                 }
+            //             }
+            //         });
+            //     });
+            //     let ctx = this.createCanvas();
+            //     this.displayData(false, '2020-01-01', false);
+            //     const myNewChart = new Chart(ctx, {
+            //         type: 'line',
+            //         data: window.machineChart.lineData,
+            //         options: window.lineOptions
+            //     });
+            // }
             this.machineContactless = function(filterData) {
                 let result = {}
                 filterData.forEach((machine) => {             
@@ -663,7 +701,7 @@
                 document.getElementById("machineBarChart").remove();
                 const canvas1 = document.createElement('canvas');
                 canvas1.id = 'machineBarChart';
-                canvas1.height = 210;
+                canvas1.height = 300;
                 canvas1.style.resize = 'both';
                 const div1 = document.getElementById("machineBarChartParent").appendChild(canvas1);
                 const ctx1 = document.getElementById('machineBarChart').getContext('2d');
@@ -715,35 +753,39 @@
         var lineData = {
             labels: Object.keys(machineChart.dates),
             datasets: [
-                {
-                    label: "My First dataset",
-                    fillColor: "rgba(0,0,0,0)",
-                    strokeColor: "#00581E",
-                    pointColor: "#00581E",
-                    pointStrokeColor: "#00581E",
-                    pointHighlightFill: "#00581E",
-                    pointHighlightStroke: "#00581E",
-                    data: machineChart.appSales
-                },
-                {
-                    label: "My Second dataset",
-                    fillColor: "rgba(0,0,0,0)",
-                    strokeColor: "#FFB200",
-                    pointColor: "#FFB200",
-                    pointStrokeColor: "#FFB200",
-                    pointHighlightFill: "#FFB200",
-                    pointHighlightStroke: "#FFB200",
-                    data: machineChart.cashSales
-                },
+                // {
+                //     label: "My First dataset",
+                //     fillColor: "rgba(0,0,0,0)",
+                //     strokeColor: "#00581E",
+                //     pointColor: "#00581E",
+                //     pointStrokeColor: "#00581E",
+                //     pointHighlightFill: "#00581E",
+                //     pointHighlightStroke: "#00581E",
+                //     data: machineChart.contactlessSales
+                // },
+                // {
+                //     label: "My Second dataset",
+                //     fillColor: "rgba(0,0,0,0)",
+                //     strokeColor: "#FFB200",
+                //     pointColor: "#FFB200",
+                //     pointStrokeColor: "#FFB200",
+                //     pointHighlightFill: "#FFB200",
+                //     pointHighlightStroke: "#FFB200",
+                //     data: machineChart.cashSales
+                // },
             ]
         };
 
         window.hzBarOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
         legend: {
-            position: "top",
+            position: "left",
+            align: 'center',
             display: true,
             labels: {
-                    fontColor: 'rgb(255, 99, 132)'
+                    //fontColor: 'rgb(255, 99, 132)'
+                    //padding: 65
                 }
         },
             scales: {
@@ -759,8 +801,8 @@
                 padding: 15,
                 fontSize: 16,
                 },
-                barPercentage: 0.7,
-                categoryPercentage: 1,
+                barPercentage: 0.9,
+                categoryPercentage: 0.9,
             
             }],
             xAxes: [{
@@ -837,7 +879,7 @@
         var myChart = new Chart(ctx1, {
         type: 'horizontalBar',
         data: {
-        labels: ['Machine contactless sales'],
+        //labels: ['Machine contactless sales'],
         datasets: window.hzBarDataSet
     },
     options: window.hzBarOptions
