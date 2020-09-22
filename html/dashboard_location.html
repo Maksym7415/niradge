@@ -190,8 +190,8 @@
                                                     <div class="dashboard_machine_margin">
                                                         <h2>Sales</h2>
                                                         <ul class="dashboard_machine_link" style="display: flex; flex-direction: column;">
-                                                            <li class="color_bgbox5"><span></span>APP_CONTACTLESS_SALES</li>
-                                                            <li class="color_bgbox6"><span></span> CASH_SALES</li>
+                                                            <li class="color_bgbox5"><span></span>Contactless sales</li>
+                                                            <li class="color_bgbox6"><span></span> Cashless sale</li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -203,12 +203,12 @@
         
                                                     <div class="dashboard_machine_margin">
                                                         <h2>Top 5 machine</h2>
-                                                        <ul class="dashboard_machine_link">
-                                                            <li class="color_bgbox1"><span></span> Ring toss</li>
-                                                            <li class="color_bgbox2"><span></span> Cruish blast</li>
-                                                            <li class="color_bgbox3"><span></span> Air hockey</li>
-                                                            <li class="color_bgbox4"><span></span> Peppa pig</li>
-                                                            <li class="color_bgbox5"><span></span> Quikdrop</li>
+                                                        <ul class="dashboard_machine_link" id = 'fiveMachines'>
+                                                            <!-- <li class="color_bgbox1" id = 'one'><span></span> Ring toss</li>
+                                                            <li class="color_bgbox2" id = 'two'><span></span> Cruish blast</li>
+                                                            <li class="color_bgbox3" id = 'three'><span></span> Air hockey</li>
+                                                            <li class="color_bgbox4" id = 'four'><span></span> Peppa pig</li>
+                                                            <li class="color_bgbox5" id = 'five'><span></span> Quikdrop</li> -->
                                                         </ul>
                                                     </div>
         
@@ -231,8 +231,8 @@
                                                             <select id='locations'>
                                                                 <option value="0" selected>All Location</option>
                                                                 <option value="All Location">All Location</option>
-                                                                <option value="New York">New York</option>
-                                                                <option value="southsea arcade">Southsea arcade</option>
+                                                                <!-- <option value="New York">New York</option>
+                                                                <option value="southsea arcade">Southsea arcade</option> -->
                                                             </select>
                                                         </div>
                                                     </div>
@@ -241,7 +241,7 @@
                                                 
         
                                                 <div class="dashboard_weekly_right" style='margin-top: 60px;'>
-                                                    <div class="dashboard_weekly_titel1">
+                                                    <div class="dashboard_weekly_titel1 w-full">
                                                         <h3>Weekly Sales / Cash Drop</h3>
                                                         <ul>
                                                             <li class="cash_sales_icon1"><span></span>App sales</li>
@@ -249,12 +249,8 @@
                                                             <li class="cash_sales_icon3"><span></span>Contactless sales</li>
                                                         </ul>
                                                     </div>
-                                                    <div class="dashboard_current_left1" id='parent_lineChart'>
-                                                        <canvas id="lineChart" height="250"></canvas>
-                                                    </div>
-                                                    <div class="dashboard_current_right1">
-        
-                                                        <canvas id="barChart" height="250"></canvas>
+                                                    <div class="dashboard_current_left1" style='width: 600px;' id='parent_lineChart' >
+                                                        <canvas id="lineChart" height="250" width="600"></canvas>
                                                     </div>
                                                 </div>
         
@@ -466,37 +462,49 @@
                     }
                     //h.click();
                     window.allMachines = e.target.innerHTML;
-
                     window.machineChart.allFilters(window.allMachines, window.machineLocation || 'All Location')
-                    // if (this.innerHTML === 'All Machines') {
-                    //     const {ctx, pieCtx, pieCtx1} = window.machineChart.createCanvas();
-                    //     const { start, end, dayName, isCompressed } = window.machineChart.updateData;
-                    //     await window.machineChart.getDateRange(window.start || moment().subtract(29, 'days'), window.end || moment(), window.dayName || '30DAYS', true, window.machineLocation || "All Location");
-                    //     const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-                    //     const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-                    //     const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
-                    //     return;
-                    // }
-                    // if(className === 'custom-select1') {
-                    //     let isCompressed = false;
-                    //         const {ctx, pieCtx, pieCtx1} = window.machineChart.createCanvas();
-                    //         selectRun('custom-select');
-                    //         selectRun('custom-select1');
-                    //         await window.machineChart.getDateRange(window.start || moment().subtract(29, 'days'), window.end || moment(), window.dayName || '30DAYS', true, e.target.innerHTML === 'Southsea arcade' ? 'southsea arcade': e.target.innerHTML);
-                            
-                    //         window.machineChart.updateData = { start: window.start, end: window.end, dayName: window.dayName, isCompressed };
-                        
-                    //         const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-                    //         const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-                    //         const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
-                    // }else {
-                    //     window.machineChart.displayOneMachineData(s.options[i].getAttribute("value"),  window.machineLocation);
-                    // }
-                    
-                    // selectUpdate('custom-select');
-                    // selectUpdate('custom-select1');
+                });
+            }
+        }
+    }
 
+    function selectUpdate1(className, isShow) {
+        var x, i, j, selElmnt, a, b, c;
+        /*look for any elements with the class "custom-select":*/
+        x = document.getElementsByClassName(className);
+        for (i = 0; i < x.length; i++) {
+            selElmnt = x[i].getElementsByTagName("select")[0];
+            b = x[i].getElementsByClassName("select-items")[0];
+            b.innerHTML = '';
+            for (j = 1; j < selElmnt.length; j++) {
+                /*for each option in the original select element,
+                create a new DIV that will act as an option item:*/
+                c = document.createElement("DIV");
+                c.innerHTML = selElmnt.options[j].innerHTML;
+                b.appendChild(c);
 
+                c.addEventListener("click", async function (e) {
+                    /*when an item is clicked, update the original select box,
+                    and the selected item:*/
+                    var y, i, k, s, h;
+                    s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                    h = this.parentNode.previousSibling;
+                    for (i = 0; i < s.length; i++) {
+                        if (s.options[i].innerHTML == this.innerHTML) {
+                            s.selectedIndex = i;
+                            h.innerHTML = this.innerHTML;
+                            y = this.parentNode.getElementsByClassName("same-as-selected");
+                            for (k = 0; k < y.length; k++) {
+                                y[k].removeAttribute("class");
+                            }
+                            this.setAttribute("class", "same-as-selected");
+                            break;
+                        }
+                    }
+                    //h.click();
+                    window.machineLocation = e.target.innerHTML;
+                    console.log(window.machineLocation )
+                    window.machineChart.allFilters(window.allMachines ||  'All Machines', window.machineLocation || 'All Location')
                 });
             }
         }
@@ -521,7 +529,6 @@
         //document.getElementById('canvas_piechart').remove()
         window.start = start;
         window.end = end;
-
         let isCompressed = false;
 
         window.dayName = null
@@ -570,7 +577,7 @@
                     this.allData = null;
                     this.skip = skip;
                     this.machineList = [];
-                    this.monthsName = ["Jan", "Feb",'Mar', "Apr", 'May', "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+                    this.monthsName = ["Jan", "Dec", "Feb",'Mar', "Apr", 'May', "Jun", "Jul", "Aug", "Sep", "Oct", "Nov" ]
         
                     this.getMs = function (date) {
                         return new Date(date).setHours(0, 0, 0, 0);
@@ -582,11 +589,12 @@
 
                     this.getChartDateFormat = function (date) {
                         date = new Date(date);
+                        console.log(date.getMonth())
                         return ('0' + (date.getDate())).slice(-2) + '-' + this.monthsName[date.getMonth() + 1] + '-' +  (date.getFullYear() + '').slice(-2);
                     }
 
                     this.fetchData = async function (name) {
-        
+                        
                         const reqBody = JSON.stringify({
                             "APISERVICE": 'KP_AMUSEMENT_'+  name + '_CHART_DATA',
                             "LOGIN_USER_ID": "7"
@@ -637,18 +645,7 @@
                         spinner.src = './images/spinner.gif'
                         parentNode.appendChild(spinner)
                     }
-                    // this.createPieDiv = function() {
-                    //     const pieDiv = document.createElement("div");
-                    //     pieDiv.style.position = 'relative';
-                    //     pieDiv.className = 'canvas_piechart';
-                    //     pieDiv.id = 'canvas_piechart';
-                    //     const pieCanvas = document.createElement("canvas");
-                    //     pieCanvas.id = 'pieChart'
-                    //     pieCanvas.style.height = 180
-                    //     pieCanvas.style.width = 180
-                    //     pieDiv.appendChild(pieCanvas);     
-                    //     document.getElementById('mainPieRightDiv').appendChild(pieDiv);      
-                    // }
+
                     this.deleteLoader = function () {
                         document.getElementById('loader').remove()
                         document.getElementById('loader1').remove()
@@ -684,20 +681,29 @@
                         }
                     }
                     this.allFilters = function(machineFilters, locationFiltes) {
-                        console.log(machineFilters, locationFiltes)
+
+                        this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
+                            APP_SALES: 0,
+                            CASH_SALES: 0,
+                            CONTACTLESS_SALES: 0,
+                            date: ''
+                        });
+
                         if((machineFilters === 'All Machines' || machineFilters === undefined) && (locationFiltes === undefined || locationFiltes === 'All Location') ) {
                             this.allData.map((el) => {
                             Object.keys(this.dates).map(item => {
                                 if (item === el.TXN_DATE) {
                                     return this.dates = {
-                                        ...this.dates,
-                                        [item]: {
-                                            APP_SALES: +el.APP_SALES,
-                                            CASH_SALES: +el.CASH_SALES,
-                                            CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
-                                            date: this.dates[item].date
-                                        }
+                                    ...this.dates,
+                                    [item]: {
+                                        APP_SALES: +this.dates[item].APP_SALES + +el.APP_SALES,
+                                        CASH_SALES: +this.dates[item].CASH_SALES + +el
+                                            .CASH_SALES,
+                                        CONTACTLESS_SALES: (+this.dates[item]
+                                            .CONTACTLESS_SALES + +el.CONTACTLESS_SALES),
+                                        date: this.dates[item].date
                                     }
+                                }
                                 }
                             });
                         });
@@ -720,19 +726,29 @@
 
 
                         else if(locationFiltes === 'All Location' && machineFilters !== 'All Machines') {
+
+                            this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
+                            APP_SALES: 0,
+                            CASH_SALES: 0,
+                            CONTACTLESS_SALES: 0,
+                            date: ''
+                        });
+
                             let machine = this.machineList.filter(item => item.MACHINE_NUMBER == machineFilters);
                             this.allData.map((el) => {
                             Object.keys(this.dates).map(item => {
                                 if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine[0].MACHINE_NUMBER) {
                                     return this.dates = {
-                                        ...this.dates,
-                                        [item]: {
-                                            APP_SALES: +el.APP_SALES,
-                                            CASH_SALES: +el.CASH_SALES,
-                                            CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
-                                            date: this.dates[item].date
-                                        }
+                                    ...this.dates,
+                                    [item]: {
+                                        APP_SALES: +this.dates[item].APP_SALES + +el.APP_SALES,
+                                        CASH_SALES: +this.dates[item].CASH_SALES + +el
+                                            .CASH_SALES,
+                                        CONTACTLESS_SALES: (+this.dates[item]
+                                            .CONTACTLESS_SALES + +el.CONTACTLESS_SALES),
+                                        date: this.dates[item].date
                                     }
+                                }
                                 }
                             });
                         });
@@ -752,21 +768,32 @@
                         }
 
                         else if(locationFiltes !== 'All Location' && machineFilters === 'All Machines') {
+
+                            this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
+                            APP_SALES: 0,
+                            CASH_SALES: 0,
+                            CONTACTLESS_SALES: 0,
+                            date: ''
+                        });
+
                         const fitlerData =  this.allData.filter((el) => el.LOCATION_NAME === locationFiltes)
+                        
                         fitlerData.map((el) => {
-                            Object.keys(this.dates).map(item => {
-                                if (item === el.TXN_DATE) {
-                                    return this.dates = {
-                                        ...this.dates,
-                                        [item]: {
-                                            APP_SALES: +el.APP_SALES,
-                                            CASH_SALES: +el.CASH_SALES,
-                                            CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
-                                            date: this.dates[item].date
-                                        }
+                            Object.keys(this.dates).map((item) => {
+                            if (item === el.TXN_DATE) {
+                                return this.dates = {
+                                    ...this.dates,
+                                    [item]: {
+                                        APP_SALES: +this.dates[item].APP_SALES + +el.APP_SALES,
+                                        CASH_SALES: +this.dates[item].CASH_SALES + +el
+                                            .CASH_SALES,
+                                        CONTACTLESS_SALES: (+this.dates[item]
+                                            .CONTACTLESS_SALES + +el.CONTACTLESS_SALES),
+                                        date: this.dates[item].date
                                     }
                                 }
-                            });
+                            }
+                        })
                         });
                         let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
                         this.displayData(true, window.start , false, true);
@@ -785,20 +812,30 @@
 
 
                         else if(locationFiltes !== 'All Location' && machineFilters !== 'All Machines') {
+
+                            this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
+                            APP_SALES: 0,
+                            CASH_SALES: 0,
+                            CONTACTLESS_SALES: 0,
+                            date: ''
+                        });
+
                             const fitlerLocationData = this.allData.filter((el) => el.LOCATION_NAME === locationFiltes)
                             let machine = this.machineList.filter(item => item.MACHINE_NUMBER == machineFilters);
                             fitlerLocationData.map((el) => {
                             Object.keys(this.dates).map(item => {
                                 if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine[0].MACHINE_NUMBER) {
                                     return this.dates = {
-                                        ...this.dates,
-                                        [item]: {
-                                            APP_SALES: +el.APP_SALES,
-                                            CASH_SALES: +el.CASH_SALES,
-                                            CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
-                                            date: this.dates[item].date
-                                        }
+                                    ...this.dates,
+                                    [item]: {
+                                        APP_SALES: +this.dates[item].APP_SALES + +el.APP_SALES,
+                                        CASH_SALES: +this.dates[item].CASH_SALES + +el
+                                            .CASH_SALES,
+                                        CONTACTLESS_SALES: (+this.dates[item]
+                                            .CONTACTLESS_SALES + +el.CONTACTLESS_SALES),
+                                        date: this.dates[item].date
                                     }
+                                }
                                 }
                             });
                         });
@@ -840,7 +877,113 @@
                             }
                             else return result[machine.MACHINE_NUMBER] = machine
                         })
+
                         const arr = Object.values(result).sort((a,b) => Number(a.SUM) > Number(b.SUM)  ? -1 : 1 ).slice(0, 5)
+                        const fiveMachines = document.getElementById('fiveMachines')
+                        const isElem = document.getElementsByClassName('color_bgbox1')
+                        let one, two, three, four, five, span1, span2, span3, span4, span5;
+
+                         console.log(isElem)
+
+                        if(!isElem.length) {
+                            console.log(isElem)
+                            one = document.createElement("li");
+                            two = document.createElement("li");
+                            three = document.createElement("li");
+                            four = document.createElement("li");
+                            five = document.createElement("li");
+
+                            span1 = document.createElement("span");
+                            span2 = document.createElement("span");
+                            span3 = document.createElement("span");
+                            span4 = document.createElement("span");
+                            span5 = document.createElement("span");
+
+                            one.classList.add("li");
+                            two.classList.add("li");
+                            three.classList.add("li");
+                            four.classList.add("li");
+                            five.classList.add("li");
+
+                            span1.classList.add("span");
+                            span2.classList.add("span");
+                            span3.classList.add("span");
+                            span4.classList.add("span");
+                            span5.classList.add("span");
+
+                        one.innerText = arr[0].MACHINE_NAME
+                        two.innerText = arr[1].MACHINE_NAME
+                        three.innerText = arr[2].MACHINE_NAME
+                        four.innerText = arr[3].MACHINE_NAME
+                        five.innerText = arr[4].MACHINE_NAME
+
+                        one.appendChild(span1)
+                        two.append(span2)
+                        three.append(span3)
+                        four.append(span4)
+                        five.append(span5)
+
+                        one.classList.add('color_bgbox5');
+                        two.classList.add('color_bgbox2');
+                        three.classList.add('color_bgbox1');
+                        four.classList.add('color_bgbox3');
+                        five.classList.add('color_bgbox4');
+                        
+                        fiveMachines.append(one)
+                        fiveMachines.append(two)
+                        fiveMachines.append(three)
+                        fiveMachines.append(four)
+                        fiveMachines.append(five)
+
+                        }else {
+                            elementsLi = document.getElementsByClassName('li');
+                            elementsSpan = document.getElementsByClassName('span')
+
+                        elementsLi[0].innerText = arr[0].MACHINE_NAME
+                        elementsLi[1].innerText = arr[1].MACHINE_NAME
+                        elementsLi[2].innerText = arr[2].MACHINE_NAME
+                        elementsLi[3].innerText = arr[3].MACHINE_NAME
+                        elementsLi[4].innerText = arr[4].MACHINE_NAME
+
+                        span1 = document.createElement("span");
+                        span2 = document.createElement("span");
+                        span3 = document.createElement("span");
+                        span4 = document.createElement("span");
+                        span5 = document.createElement("span");
+
+                        elementsLi[0].appendChild(span1)
+                        elementsLi[1].append(span2)
+                        elementsLi[2].append(span3)
+                        elementsLi[3].append(span4)
+                        elementsLi[4].append(span5)
+
+                        elementsLi[0].classList.add('color_bgbox5');
+                        elementsLi[1].classList.add('color_bgbox2');
+                        elementsLi[2].classList.add('color_bgbox1');
+                        elementsLi[3].classList.add('color_bgbox3');
+                        elementsLi[4].classList.add('color_bgbox4');
+
+                        }
+
+                        // one.innerText = arr[0].MACHINE_NAME
+                        // two.innerText = arr[1].MACHINE_NAME
+                        // three.innerText = arr[2].MACHINE_NAME
+                        // four.innerText = arr[3].MACHINE_NAME
+                        // five.innerText = arr[4].MACHINE_NAME
+
+
+                        // one.classList.add('color_bgbox5');
+                        // two.classList.add('color_bgbox2');
+                        // three.classList.add('color_bgbox1');
+                        // four.classList.add('color_bgbox3');
+                        // five.classList.add('color_bgbox4');
+                        
+                        // fiveMachines.append(one)
+                        // fiveMachines.append(two)
+                        // fiveMachines.append(three)
+                        // fiveMachines.append(four)
+                        // fiveMachines.append(five)
+
                         const pieData = [
                             {
                                 value: arr[0].SUM,
@@ -915,7 +1058,6 @@
                             }
                             currentDate += 86400000
                         })
-                        console.log(dates)
                         return dates;
                     }
                     this.createMachineList = function () {
@@ -928,27 +1070,41 @@
                                 });
                             }
                         }
-        
+                        //locations
+
                         let selectDOM = document.getElementById('machine_select');
+                        let selectLocations = document.getElementById('locations');
                         let option;
+                        let locationOption;
 
                         this.machineList.map(item => {
                             option = document.createElement("option");
                             option.value = item.MACHINE_NUMBER;
                             option.text = item.MACHINE_NUMBER;
                             selectDOM.add(option);
+                            if(!(item.LOCATION_NAME in window.locationObject)) {
+                                console.log(12354)
+                                window.locationObject[item.LOCATION_NAME] = item.LOCATION_NAME;
+                                locationOption = document.createElement("option");
+                                locationOption.value = item.LOCATION_NAME;
+                                locationOption.text = item.LOCATION_NAME;
+                                selectLocations.add(locationOption)
+                            }
                         });
-
+                        // [...selectLocations.children].for((el, index, arr) =>  {
+                        //     if(el.innerText !== 'All Location' el.innerText === arr[index + 2] )
+                        // })
                 selectUpdate('custom-select');
+                selectUpdate1('custom-select1');
         
                     }
                     this.redoneData = function (initialData) {
+                        
                         let newDate = {};
                         const dateLength = Object.keys(this.dates).length;
-                        console.log(this.dates)
                         Object.keys(this.dates).reduce((a, b, index) => {
+                            console.log(this.dates[a].date)
                                 if (index % this.skip === 0 && index !== 0) {
-                                    console.log(newDate[a], a, this.dates[a])
                                     newDate = {
                                         ...newDate,
                                         [a]: {
@@ -1033,12 +1189,14 @@
                             });
                             }
                         }
+                        console.log(this.dates)
                         if (isCompressed) this.dates = this.redoneData(initialData);
                         this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                         this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
                         this.contactlessSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES);
                         this.sumSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES + this.dates[el].APP_SALES + this.dates[el].CASH_SALES);
                         this.chartDates = Object.keys(this.dates).map(el => this.dates[el].date);
+                        console.log(this.chartDates, Object.keys(this.dates), isCompressed)
                         this.lineData = {
                             labels: this.chartDates,
                             datasets: [ {
@@ -1164,6 +1322,9 @@
                 const skip = 7;
                 window.machineChart = new MachineChart(skip);
                 //document.getElementById('canvas_piechart').remove()
+                window.start = moment().subtract(29, 'days')
+                window.end = moment()
+                window.locationObject = {}
                 await window.machineChart.getDateRange(moment().subtract(29, 'days'), moment(), '30DAYS', true, 'All Location');
                 window.machineChart.updateData = { start: moment().subtract(29, 'days'), end: moment(), dayName: '30DAYS' };
                 
@@ -1267,7 +1428,7 @@
         // ];
             var ctx2 = document.getElementById("pieChart1").getContext("2d");
             var myNewChart = new Chart(ctx2).Pie(machineChart.pieDataAllMachines, pieOptions);
-        
+            
             })()
         </script>
         
@@ -1277,60 +1438,7 @@
         
             $(document).ready(function () {
         
-        
-                
-        
-                // BAR CHART
-        
-                var barOptions = {
-                    //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-                    scaleBeginAtZero: true,
-                    //Boolean - Whether grid lines are shown across the chart
-                    scaleShowGridLines: true,
-                    //String - Colour of the grid lines
-                    scaleGridLineColor: "rgba(0,0,0,.05)",
-                    //Number - Width of the grid lines
-                    scaleGridLineWidth: 1,
-                    //Boolean - If there is a stroke on each bar
-                    barShowStroke: true,
-                    //Number - Pixel width of the bar stroke
-                    barStrokeWidth: 1,
-                    //Number - Spacing between each of the X value sets
-                    barValueSpacing: 0,
-                    //Number - Spacing between data sets within X values
-                    barDatasetSpacing: 0,
-                    //Boolean - Re-draw chart on page resize
-                    responsive: true,
-                    //String - A legend template
-                }
-        
-                var barData = {
-            labels: ["1/11", "2/11", "3/11", "4/11", "5/11", "6/11", "7/11"],
-            datasets: [
-                {
-                    label: "My First dataset",
-                    fillColor: "#D9F4B0",
-                    strokeColor: "#D9F4B0",
-                    highlightFill: "#D9F4B0",
-                    highlightStroke: "#D9F4B0",
-                    data: [65, 59, 80, 81, 56, 55, 40]
-                },
-                {
-                    label: "My Second dataset",
-                    fillColor: "#8CD600",
-                    strokeColor: "#8CD600",
-                    highlightFill: "#8CD600",
-                    highlightStroke: "#8CD600",
-                    data: [28, 48, 40, 19, 86, 27, 90]
-                }
-            ]
-        };
-
-        // render chart
-        var ctx = document.getElementById("barChart").getContext("2d");
-        var myNewChart = new Chart(ctx).Bar(barData, barOptions);
-
-        // END BAR CHART
+    
 
         // PIE CHART
 

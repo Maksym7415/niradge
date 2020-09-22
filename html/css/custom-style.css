@@ -912,3 +912,10 @@ input[type="checkbox"].styled:checked + label:after {
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+.machineDiv {
+    width: 75%; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+}

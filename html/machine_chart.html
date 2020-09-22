@@ -549,7 +549,7 @@
                 this.machineList.map(item => {
                     option = document.createElement("option");
                     option.value = item.MACHINE_NUMBER;
-                    option.text = item.MACHINE_NUMBER;
+                    option.text = item.MACHINE_NAME;
                     selectDOM.add(option);
                 });
 
@@ -625,6 +625,7 @@
                 this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                 this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
                 this.contactlessSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES);
+                this.totalSales = Object.keys(this.dates).map((el) => this.dates[el].CONTACTLESS_SALES + this.dates[el].CASH_SALES + this.dates[el].APP_SALES )
                 this.lineData = {
                     labels: Object.keys(this.dates),
                     datasets: [ {
@@ -633,18 +634,24 @@
                         borderColor: "#00581E",
                         data: this.appSales
                     },
-                        {
-                            label: "Cash",
-                            backgroundColor: "rgba(255,178,0,0.1)",
-                            borderColor: "#FFB200",
-                            data: this.cashSales
-                        },
-                        {
-                            label: "Cashless",
-                            backgroundColor: "rgba(140,214,0,0.1)",
-                            borderColor: "#8CD600",
-                            data: this.contactlessSales
-                        }
+                    {
+                        label: "Cash",
+                        backgroundColor: "rgba(255,178,0,0.1)",
+                        borderColor: "#FFB200",
+                        data: this.cashSales
+                    },
+                    {
+                        label: "Cashless",
+                        backgroundColor: "rgba(140,214,0,0.1)",
+                        borderColor: "#8CD600",
+                        data: this.contactlessSales
+                    },
+                    {
+                        label: "Totalsales",
+                        backgroundColor: "rgba(251,62,62,0.1)",
+                        borderColor: "#f97f7f",
+                        data: this.totalSales
+                    }
                     ]
                 };
             }

@@ -165,7 +165,17 @@
                                    
                                     <div class="dashboard_weekly_right " >
                                         <div class="dashboard_weekly_titel1" style='width: 45%'>
-                                            <div style="
+                                        <div id = 'mainTerminalInfo' style='width: 50%; padding: 25px; display: flex;  flex-direction: column; align-items: end; border: 1px solid #8CD600; border-radius: 26px;'>
+                                                <!-- <p>Terminal Location: ... </p>
+                                                <p>Machine mapped: </p>
+                                                    
+                                                    <div style = 'width: 75%; display: flex; flex-direction: column; align-items: center;'>
+                                                        <p>name</p>
+                                                        <p>number</p>
+                                                    </div> -->
+                                            </div>
+                                        </div>
+                                            <!-- <div style="
                                             width: 330px;
                                             padding: 25px;
                                             border: 1px solid #8CD600;
@@ -179,7 +189,7 @@
                                                 <p id = 'machineName2' style="    text-align: end;"></p>
                                                 <p id = 'machineNumber2' style="    text-align: end;"></p>
                                                 </div>
-                                            </div>
+                                            </div> -->
                                         </div>
                                         <div class="dashboard_current_left1" id='linechart_machine_parent'>
                                             <canvas id="linechart_machine" height="250"></canvas>
@@ -361,7 +371,7 @@
         switch (label) {
             case 'Last 30 Days':
                 dayName = '30DAYS';
-                isCompressed = true;
+                isCompressed = false;
                 break;
             case '3 Month':
                 dayName = 'THREE_MONTH';
@@ -496,37 +506,14 @@
                 this.dates = this.generateDataObject(this.getMs(start), this.getMs(end), {
                     APP_SALES: 0,
                     CASH_SALES: 0,
-                    CONTACTLESS_SALES: 0
+                    CONTACTLESS_SALES: 0,
+                    terminal: ''
                 });
+                console.log(this.dates)
                 this.createLoader()
                 try {
                     this.res = await this.fetchData(name);
                     this.machineContactless(this.res.KPRESPONSE.CHART_DATA_LIST)
-                    const removeDublicate = (state) => {
-                        const result = [];
-                        const map = new Map();
-                            for (const item of this.res.KPRESPONSE.CHART_DATA_LIST) {
-                                if(!map.has(item.MACHINE_NUMBER)){
-                                    map.set(item.MACHINE_NUMBER, true);
-                                    result.push({
-                                        ...item
-                                    });
-                                }
-                            }
-                        return result
-                    }
-
-                    const machines = removeDublicate()
-                    const terminalLocation = document.getElementById('terminalLocation')
-                    const machineName1 = document.getElementById('machineName1')
-                    const machineName2 = document.getElementById('machineName2')
-                    const machineNumber1 = document.getElementById('machineNumber1')
-                    const machineNumber2 = document.getElementById('machineNumber2')
-                    terminalLocation.innerText = 'Terminal Location: ' + machines[0].LOCATION_NAME
-                    machineName1.innerText = machines[0].MACHINE_NAME 
-                    machineName2.innerText = machines[1].MACHINE_NAME
-                    machineNumber1.innerText = machines[0].MACHINE_NUMBER
-                    machineNumber2.innerText = machines[1].MACHINE_NUMBER
                     this.deleteLoader();
                     this.createMachineList();
                     this.displayData(isCompressed, start, true);
@@ -550,6 +537,7 @@
                     }
                     currentDate += 86400000
                 })
+                console.log(dates)
                 return dates;
             }
             this.createMachineList = function () {
@@ -574,7 +562,8 @@
                                 [a]: {
                                     APP_SALES: newDate[a].APP_SALES / this.skip,
                                     CASH_SALES: newDate[a].CASH_SALES / this.skip,
-                                    CONTACTLESS_SALES: newDate[a].CONTACTLESS_SALES / this.skip
+                                    CONTACTLESS_SALES: newDate[a].CONTACTLESS_SALES / this.skip,
+                                    terminal: newDate[a].terminal
                                 }
                             }
                             a = b
@@ -585,8 +574,9 @@
                                 [a]: {
                                     APP_SALES: newDate[a].APP_SALES / ((dateLength - 1) % this.skip),
                                     CASH_SALES: newDate[a].CASH_SALES / ((dateLength - 1) % this.skip),
-                                    CONTACTLESS_SALES: newDate[a].CONTACTLESS_SALES / (dateLength - 1 %
-                                        this.skip)
+                                    CONTACTLESS_SALES: (newDate[a].CONTACTLESS_SALES / (dateLength - 1 %
+                                        this.skip)),
+                                    terminal: newDate[a].terminal
                                 }
                             }
                             a = b
@@ -598,9 +588,10 @@
                                     newDate[a].APP_SALES + this.dates[b].APP_SALES,
                                 CASH_SALES: newDate[a] === undefined ? this.dates[b].CASH_SALES :
                                     newDate[a].CASH_SALES + this.dates[b].CASH_SALES,
-                                CONTACTLESS_SALES: newDate[a] === undefined ? this.dates[b]
+                                CONTACTLESS_SALES: (newDate[a] === undefined ? this.dates[b]
                                     .CONTACTLESS_SALES : newDate[a].CONTACTLESS_SALES + this.dates[b]
-                                    .CONTACTLESS_SALES
+                                    .CONTACTLESS_SALES),
+                                terminal: newDate[a] === undefined ? this.dates[b].terminal : this.dates[a].terminal
                             }
 
                         }
@@ -625,6 +616,7 @@
                                             .CASH_SALES,
                                         CONTACTLESS_SALES: +this.dates[item]
                                             .CONTACTLESS_SALES + +el.CONTACTLESS_SALES,
+                                        terminal: el.TERMINAL_NUMBER
                                     }
                                 }
                             }
@@ -634,50 +626,140 @@
                 if (isCompressed) this.dates = this.redoneData(initialData);
                 this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                 this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
+                this.displayTheTerminalData();
                 this.contactlessSales = Object.keys(this.dates).map(el => {
                     return this.dates[el].CONTACTLESS_SALES
                 });
-                this.lineData = {
-                    labels: Object.keys(this.dates),
-                    datasets: [ {
+                this.terminalData = []
+                
+                this.datasets = [];
+                let a = {
+
+                }
+                    Object.keys(this.terminalObject).forEach((item) => {
+                        
+                         a = Object.keys(this.dates).map(el => {
+                            if( this.dates[el].terminal === item || !this.dates[el].terminal) {
+                            this.terminalData.push(this.dates[el].CONTACTLESS_SALES)
+                            return this.dates[el].CONTACTLESS_SALES
+                        }
+                        })
+                        this.datasets.push(
+                            {
+                                label: 'Terminal №' + item,
+                                backgroundColor: "rgba(180,90,163,0.1)",
+                                borderColor: "#b45aa3",
+                                data: a
+                            }
+                        )               
+                });
+                this.datasets.push({
                         label: 'Contactless sales',
                         backgroundColor: "rgba(0,88,30,0.1)",
                         borderColor: "#00581E",
                         data: this.contactlessSales
                     },
-                    // {
-                    //     label: "Cash",
-                    //     backgroundColor: "rgba(255,178,0,0.1)",
-                    //     borderColor: "#FFB200",
-                    //     data: this.cashSales
-                    // },
-                    ]
+                   )
+
+                this.lineData = {
+                    labels: Object.keys(this.dates),
+                    datasets: this.datasets
                 };
             }
-            // this.displayTheTerminalData = async function (terminal) {
-            //     let terminal = this.machineList.find(item => item.TERMINAL_NUMBER == '1350009557');
-            //     this.res.KPRESPONSE.CHART_DATA_LIST.map((el) => {
-            //         Object.keys(this.dates).map(item => {
-            //             if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine.MACHINE_NUMBER) {
-            //                 return this.dates = {
-            //                     ...this.dates,
-            //                     [item]: {
-            //                         APP_SALES: +el.APP_SALES,
-            //                         CASH_SALES: +el.CASH_SALES,
-            //                         CONTACTLESS_SALES: +el.CONTACTLESS_SALES,
-            //                     }
-            //                 }
-            //             }
-            //         });
-            //     });
-            //     let ctx = this.createCanvas();
-            //     this.displayData(false, '2020-01-01', false);
-            //     const myNewChart = new Chart(ctx, {
-            //         type: 'line',
-            //         data: window.machineChart.lineData,
-            //         options: window.lineOptions
-            //     });
-            // }
+            this.showTerminalInfo = function() {
+                
+                const removeDublicate = (state) => {
+                        const result = [];
+                        const map = new Map();
+                            for (const item of this.res.KPRESPONSE.CHART_DATA_LIST) {
+                                if(!map.has(item.MACHINE_NUMBER)){
+                                    map.set(item.MACHINE_NUMBER, true);
+                                    result.push({
+                                        ...item
+                                    });
+                                }
+                            }
+                        return result
+                    }
+
+                    const machines = removeDublicate()
+                    console.log(machines)
+                    // <div id = 'mainTerminalInfo' style='width: 50%; padding: 25px; display: flex;  flex-direction: column; align-items: end; border: 1px solid #8CD600; border-radius: 26px;'>
+                    //     <p>Terminal Location: ... </p>
+                    //     <p>Machine mapped: </p>
+                        
+                    //     <div style = 'width: 75%; display: flex; flex-direction: column; align-items: center;'>
+                    //         <p>name</p>
+                    //         <p>number</p>
+                    //     </div>
+                    // </div>
+
+                    const mainTerminalInfo = document.getElementById('mainTerminalInfo');
+                    let fullTerminalObject = {
+                        // '214': [{machineName: 'dsfs', machineNumber: 'dsff'} ]
+                    }
+                    Object.keys(this.terminalObject).forEach((el) => {
+                        machines.forEach((item) => {
+                            console.log(el, item.TERMINAL_NUMBER)
+                            if(el === item.TERMINAL_NUMBER) {
+                                if(!fullTerminalObject[el]) fullTerminalObject[el] = []
+                                fullTerminalObject[el] = [...fullTerminalObject[el], {machineName: item.MACHINE_NAME, machineNumber: item.MACHINE_NUMBER, terminalLocation: item.LOCATION_NAME}]    
+                            }
+                        })
+                    })
+                    console.log(Object.keys(fullTerminalObject), Object.values(fullTerminalObject), machines)
+                    Object.keys(fullTerminalObject).forEach((el) => {
+                        let terminalLocation = document.createElement('p')
+                        terminalLocation.innerText = 'Terminal Location: ' + fullTerminalObject[el][0].terminalLocation
+
+                        let machineMapped = document.createElement('p')
+                        machineMapped.innerText = 'Machine mapped:'
+
+                        let machineDiv = document.createElement('div');
+                        machineDiv.style.display = 'flex'
+                        machineDiv.style.width = '75%'
+                        machineDiv.style.flexDirection = 'column'
+                        machineDiv.style.alignItems = 'end'
+                        machineDiv.style.marginLeft = '110px'
+                        //machineDiv.classList.add('machineDiv');
+
+                        fullTerminalObject[el].forEach((item) => {
+                            console.log(item.machineName)
+                            let machineName_p = document.createElement('p')
+                            machineName_p.innerText = item.machineName
+                            let machineNumber_p = document.createElement('p')
+                            machineNumber_p.innerText = item.machineNumber
+
+                            machineDiv.append(machineName_p)
+                            machineDiv.append(machineNumber_p)
+
+                            
+                        })
+                        mainTerminalInfo.append(terminalLocation)
+                        mainTerminalInfo.append(machineMapped)
+                        mainTerminalInfo.append(machineDiv)
+                    })
+                    // const terminalLocation = document.getElementById('terminalLocation')
+                    // const machineName1 = document.getElementById('machineName1')
+                    // const machineName2 = document.getElementById('machineName2')
+                    // const machineNumber1 = document.getElementById('machineNumber1')
+                    // const machineNumber2 = document.getElementById('machineNumber2')
+                    // terminalLocation.innerText = 'Terminal Location: ' + machines[0].LOCATION_NAME
+                    // machineName1.innerText = machines[0].MACHINE_NAME 
+                    // machineName2.innerText = machines[1].MACHINE_NAME
+                    // machineNumber1.innerText = machines[0].MACHINE_NUMBER
+                    // machineNumber2.innerText = machines[1].MACHINE_NUMBER
+
+            }
+            this.displayTheTerminalData = async function (terminal) {
+                    this.terminalObject = {}
+                    this.res.KPRESPONSE.CHART_DATA_LIST.forEach((el) => {
+                        if(!(el.TERMINAL_NUMBER in  this.terminalObject)) {
+                            this.terminalObject[el.TERMINAL_NUMBER] = el.TERMINAL_NUMBER
+                        }
+                    })
+                    this.showTerminalInfo()
+            }
             this.machineContactless = function(filterData) {
                 let result = {}
                 filterData.forEach((machine) => {             
