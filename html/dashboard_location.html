@@ -247,6 +247,7 @@
                                                             <li class="cash_sales_icon1"><span></span>App sales</li>
                                                             <li class="cash_sales_icon2"><span></span>Cash sales</li>
                                                             <li class="cash_sales_icon3"><span></span>Contactless sales</li>
+                                                            <li class="cash_sales_icon4"><span></span>Contactless + App sales</li>
                                                         </ul>
                                                     </div>
                                                     <div class="dashboard_current_left1" style='width: 600px;' id='parent_lineChart' >
@@ -1083,7 +1084,6 @@
                             option.text = item.MACHINE_NUMBER;
                             selectDOM.add(option);
                             if(!(item.LOCATION_NAME in window.locationObject)) {
-                                console.log(12354)
                                 window.locationObject[item.LOCATION_NAME] = item.LOCATION_NAME;
                                 locationOption = document.createElement("option");
                                 locationOption.value = item.LOCATION_NAME;
@@ -1189,12 +1189,11 @@
                             });
                             }
                         }
-                        console.log(this.dates)
                         if (isCompressed) this.dates = this.redoneData(initialData);
                         this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                         this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
                         this.contactlessSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES);
-                        this.sumSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES + this.dates[el].APP_SALES + this.dates[el].CASH_SALES);
+                        this.sumSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES + this.dates[el].APP_SALES);
                         this.chartDates = Object.keys(this.dates).map(el => this.dates[el].date);
                         console.log(this.chartDates, Object.keys(this.dates), isCompressed)
                         this.lineData = {

@@ -375,7 +375,7 @@
                 break;
             case '3 Month':
                 dayName = 'THREE_MONTH';
-                isCompressed = true;
+                isCompressed = false;
                 break;
             case '6 Month':
                 dayName = 'SIX_MONTH';
@@ -389,8 +389,34 @@
         
         window.machineChart.updateData = { start, end, dayName, isCompressed };
        
-        // myNewChart.update();
-        //const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+
+        let arrBarHzData = []
+        let holeData = {all: 0}
+        window.machineChart.machineLineData.map(el => holeData = {...holeData, all: holeData.all + el.CONTACTLESS_SALES})
+        window.machineChart.machineLineData.forEach((el, index) => {
+                arrBarHzData.push({
+                    label: el.MACHINE_NAME,
+                    data: [el.CONTACTLESS_SALES],
+                    backgroundColor: window.hzBarColors[index].backgroundColor,
+                    borderColor: window.hzBarColors[index].borderColor,
+                    borderWidth: 2,
+                
+                },)
+            })
+            arrBarHzData.push({
+                label: 'Both',
+                data: [holeData.all],
+                backgroundColor: [
+                    'rgba(255, 206, 86, 0.2)',
+            
+                ],
+                borderColor: [
+                    'rgba(255, 206, 86, 1)',
+                ],
+                borderWidth: 2,
+            
+            })
+
         const myNewChart = new Chart(ctx, {
             type: 'line',
             data: window.machineChart.lineData,
@@ -400,49 +426,9 @@
         type: 'horizontalBar',
         data: {
         labels:  ['Machine contactless sales'],
-        datasets: [{
-            label: window.machineChart.machineLineData[0].MACHINE_NAME,
-            data: [window.machineChart.machineLineData[0].CONTACTLESS_SALES,],
-            backgroundColor: [
-                'rgba(210, 7, 7, 1)',
-        
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-
-            ],
-            borderWidth: 2,
-        
-        },
-        {
-            label: window.machineChart.machineLineData[1].MACHINE_NAME,
-            data: [window.machineChart.machineLineData[1].CONTACTLESS_SALES, ],
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.2)',
-        
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 1)',
-            ],
-            borderWidth: 2,
-        
-        },
-        {
-            label: 'Both',
-            data: [window.machineChart.machineLineData[0].CONTACTLESS_SALES + window.machineChart.machineLineData[1].CONTACTLESS_SALES],
-            backgroundColor: [
-                'rgba(255, 206, 86, 0.2)',
-        
-            ],
-            borderColor: [
-                'rgba(255, 206, 86, 1)',
-            ],
-            borderWidth: 2,
-        
-        }
-        ]
+        datasets: arrBarHzData
     },
-    options: {...window.hzBarOptions, scales: {  ...window.hzBarOptions.scales, xAxes: [{ ...window.hzBarOptions.scales.xAxes[0], ticks: {...window.hzBarOptions.scales.xAxes[0].ticks, max: window.machineChart.machineLineData[0].CONTACTLESS_SALES + window.machineChart.machineLineData[1].CONTACTLESS_SALES}}]}}
+    options: {...window.hzBarOptions, scales: {  ...window.hzBarOptions.scales, xAxes: [{ ...window.hzBarOptions.scales.xAxes[0], ticks: {...window.hzBarOptions.scales.xAxes[0].ticks, max: holeData.all}}]}}
 });
     });
     
@@ -507,9 +493,9 @@
                     APP_SALES: 0,
                     CASH_SALES: 0,
                     CONTACTLESS_SALES: 0,
-                    terminal: ''
+                    terminal: '',
+                    machineName: {}
                 });
-                console.log(this.dates)
                 this.createLoader()
                 try {
                     this.res = await this.fetchData(name);
@@ -556,6 +542,7 @@
                 let newDate = {};
                 const dateLength = Object.keys(this.dates).length;
                 Object.keys(this.dates).reduce((a, b, index) => {
+
                         if (index % this.skip === 0 && index !== 0) {
                             newDate = {
                                 ...newDate,
@@ -563,7 +550,8 @@
                                     APP_SALES: newDate[a].APP_SALES / this.skip,
                                     CASH_SALES: newDate[a].CASH_SALES / this.skip,
                                     CONTACTLESS_SALES: newDate[a].CONTACTLESS_SALES / this.skip,
-                                    terminal: newDate[a].terminal
+                                    terminal: newDate[a].terminal,
+                                    machineName: newDate[a].machineName
                                 }
                             }
                             a = b
@@ -576,7 +564,8 @@
                                     CASH_SALES: newDate[a].CASH_SALES / ((dateLength - 1) % this.skip),
                                     CONTACTLESS_SALES: (newDate[a].CONTACTLESS_SALES / (dateLength - 1 %
                                         this.skip)),
-                                    terminal: newDate[a].terminal
+                                    terminal: newDate[a].terminal,
+                                    machineName: newDate[a].machineName
                                 }
                             }
                             a = b
@@ -591,7 +580,8 @@
                                 CONTACTLESS_SALES: (newDate[a] === undefined ? this.dates[b]
                                     .CONTACTLESS_SALES : newDate[a].CONTACTLESS_SALES + this.dates[b]
                                     .CONTACTLESS_SALES),
-                                terminal: newDate[a] === undefined ? this.dates[b].terminal : this.dates[a].terminal
+                                terminal: (newDate[a] === undefined ? this.dates[b].terminal : this.dates[a].terminal),
+                                machineName:  newDate[a] === undefined ? this.dates[b].machineName : this.dates[a].machineName,
                             }
 
                         }
@@ -608,6 +598,7 @@
                         this.machineLabel.push(el.MACHINE_NUMBER)
                         Object.keys(this.dates).map((item) => {
                             if (item === el.TXN_DATE) {
+                                console.log(el.MACHINE_NAME)
                                 return this.dates = {
                                     ...this.dates,
                                     [item]: {
@@ -616,7 +607,10 @@
                                             .CASH_SALES,
                                         CONTACTLESS_SALES: +this.dates[item]
                                             .CONTACTLESS_SALES + +el.CONTACTLESS_SALES,
-                                        terminal: el.TERMINAL_NUMBER
+                                        terminal: el.TERMINAL_NUMBER,
+                                       machineName: {...this.dates[item].machineName, [el.MACHINE_NAME] : el.MACHINE_NAME}
+                                        
+                                       
                                     }
                                 }
                             }
@@ -627,32 +621,66 @@
                 this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                 this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
                 this.displayTheTerminalData();
+                colors = [
+                    {
+                        backgroundColor: 'rgba(210, 7, 7, 0.1)',
+                        borderColor: 'rgba(255, 99, 132, 1)',             
+                    },
+                    {
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        borderColor: 'rgba(54, 162, 235, 1)',             
+                    },
+                    {
+                        backgroundColor: 'rgba(170, 2, 2, 0.1)',
+                        borderColor: 'rgba(140, 7, 4, 1)',             
+                    },
+                    {
+                        backgroundColor: 'rgba(134, 56, 90, 0.1)',
+                        borderColor: 'rgba(255, 99, 132, 1)',             
+                    },
+                ]
                 this.contactlessSales = Object.keys(this.dates).map(el => {
                     return this.dates[el].CONTACTLESS_SALES
                 });
                 this.terminalData = []
                 
                 this.datasets = [];
-                let a = {
-
-                }
-                    Object.keys(this.terminalObject).forEach((item) => {
-                        
-                         a = Object.keys(this.dates).map(el => {
-                            if( this.dates[el].terminal === item || !this.dates[el].terminal) {
-                            this.terminalData.push(this.dates[el].CONTACTLESS_SALES)
-                            return this.dates[el].CONTACTLESS_SALES
+                let lineData = {}
+                this.machines.forEach((el ,index) => {
+                    lineData = Object.keys(this.dates).map((item) => {
+                        //console.log(el.MACHINE_NAME, this.dates[item].machineName[el.MACHINE_NAME])
+                        if(el.MACHINE_NAME === this.dates[item].machineName[el.MACHINE_NAME]) {
+                            return this.dates[item].CONTACTLESS_SALES/ Object.keys(this.dates[item].machineName).length
+                        }else {
+                            return 0
                         }
-                        })
-                        this.datasets.push(
+                    })
+                    this.datasets.push(
                             {
-                                label: 'Terminal №' + item,
-                                backgroundColor: "rgba(180,90,163,0.1)",
-                                borderColor: "#b45aa3",
-                                data: a
+                                label: el.MACHINE_NAME,
+                                backgroundColor: colors[index].backgroundColor,
+                                borderColor: colors[index].borderColor,
+                                data: lineData
                             }
-                        )               
-                });
+                        )           
+                })
+                //     Object.keys(this.terminalObject).forEach((item) => {
+                        
+                //          a = Object.keys(this.dates).map(el => {
+                //             if( this.dates[el].terminal === item || !this.dates[el].terminal) {
+                //             this.terminalData.push(this.dates[el].CONTACTLESS_SALES)
+                //             return this.dates[el].CONTACTLESS_SALES
+                //         }
+                //         })
+                        // this.datasets.push(
+                        //     {
+                        //         label: 'Terminal №' + item,
+                        //         backgroundColor: "rgba(180,90,163,0.1)",
+                        //         borderColor: "#b45aa3",
+                        //         data: a
+                        //     }
+                        // )               
+                // });
                 this.datasets.push({
                         label: 'Contactless sales',
                         backgroundColor: "rgba(0,88,30,0.1)",
@@ -682,74 +710,78 @@
                         return result
                     }
 
-                    const machines = removeDublicate()
-                    console.log(machines)
-                    // <div id = 'mainTerminalInfo' style='width: 50%; padding: 25px; display: flex;  flex-direction: column; align-items: end; border: 1px solid #8CD600; border-radius: 26px;'>
-                    //     <p>Terminal Location: ... </p>
-                    //     <p>Machine mapped: </p>
-                        
-                    //     <div style = 'width: 75%; display: flex; flex-direction: column; align-items: center;'>
-                    //         <p>name</p>
-                    //         <p>number</p>
-                    //     </div>
-                    // </div>
+                    this.machines = removeDublicate()
+
+                    
 
                     const mainTerminalInfo = document.getElementById('mainTerminalInfo');
                     let fullTerminalObject = {
                         // '214': [{machineName: 'dsfs', machineNumber: 'dsff'} ]
                     }
+
                     Object.keys(this.terminalObject).forEach((el) => {
-                        machines.forEach((item) => {
-                            console.log(el, item.TERMINAL_NUMBER)
+                        this.machines.forEach((item) => {
                             if(el === item.TERMINAL_NUMBER) {
                                 if(!fullTerminalObject[el]) fullTerminalObject[el] = []
                                 fullTerminalObject[el] = [...fullTerminalObject[el], {machineName: item.MACHINE_NAME, machineNumber: item.MACHINE_NUMBER, terminalLocation: item.LOCATION_NAME}]    
                             }
                         })
                     })
-                    console.log(Object.keys(fullTerminalObject), Object.values(fullTerminalObject), machines)
                     Object.keys(fullTerminalObject).forEach((el) => {
-                        let terminalLocation = document.createElement('p')
-                        terminalLocation.innerText = 'Terminal Location: ' + fullTerminalObject[el][0].terminalLocation
+                        if(![...mainTerminalInfo.children].length) {
+                            let terminalLocation = document.createElement('p')
+                            terminalLocation.innerText = 'Terminal Location: ' + fullTerminalObject[el][0].terminalLocation
 
-                        let machineMapped = document.createElement('p')
-                        machineMapped.innerText = 'Machine mapped:'
+                            let machineMapped = document.createElement('p')
+                            machineMapped.innerText = 'Machine mapped:'
 
-                        let machineDiv = document.createElement('div');
-                        machineDiv.style.display = 'flex'
-                        machineDiv.style.width = '75%'
-                        machineDiv.style.flexDirection = 'column'
-                        machineDiv.style.alignItems = 'end'
-                        machineDiv.style.marginLeft = '110px'
-                        //machineDiv.classList.add('machineDiv');
+                            let machineDiv = document.createElement('div');
+                            machineDiv.style.display = 'flex'
+                            machineDiv.style.width = '75%'
+                            machineDiv.style.flexDirection = 'column'
+                            machineDiv.style.alignItems = 'end'
+                            machineDiv.style.marginLeft = '110px'
+                            //machineDiv.classList.add('machineDiv');
 
-                        fullTerminalObject[el].forEach((item) => {
-                            console.log(item.machineName)
-                            let machineName_p = document.createElement('p')
-                            machineName_p.innerText = item.machineName
-                            let machineNumber_p = document.createElement('p')
-                            machineNumber_p.innerText = item.machineNumber
+                            fullTerminalObject[el].forEach((item) => {
+                                console.log(item.machineName)
+                                let machineName_p = document.createElement('p')
+                                machineName_p.innerText = item.machineName
+                                let machineNumber_p = document.createElement('p')
+                                machineNumber_p.innerText = item.machineNumber
 
-                            machineDiv.append(machineName_p)
-                            machineDiv.append(machineNumber_p)
+                                machineDiv.append(machineNumber_p)
+                                machineDiv.append(machineName_p)
 
-                            
-                        })
-                        mainTerminalInfo.append(terminalLocation)
-                        mainTerminalInfo.append(machineMapped)
-                        mainTerminalInfo.append(machineDiv)
+                                
+                            })
+                            mainTerminalInfo.append(terminalLocation)
+                            mainTerminalInfo.append(machineMapped)
+                            mainTerminalInfo.append(machineDiv)
+                        }
+                        // else {
+                        //     mainTerminalInfo.children[0].innerText = fullTerminalObject[el][0].terminalLocation
+                        //     fullTerminalObject[el].forEach((item) => {
+                        //         console.log(item)
+                        //         const a = [...mainTerminalInfo.children[2].children].forEach((el, index) => {
+                        //             if(index % 2) {
+                        //                 el.innerText = item.machineName
+                        //             }
+                                    
+                        //         })
+                        //         // let machineName_p = document.createElement('p')
+                        //         // machineName_p.innerText = item.machineName
+                        //         // let machineNumber_p = document.createElement('p')
+                        //         // machineNumber_p.innerText = item.machineNumber
+
+                        //         // mainTerminalInfo.children[2].append(machineNumber_p)
+                        //         // mainTerminalInfo.children[2].append(machineName_p)
+
+                                
+                        //     })
+                        // }
+
                     })
-                    // const terminalLocation = document.getElementById('terminalLocation')
-                    // const machineName1 = document.getElementById('machineName1')
-                    // const machineName2 = document.getElementById('machineName2')
-                    // const machineNumber1 = document.getElementById('machineNumber1')
-                    // const machineNumber2 = document.getElementById('machineNumber2')
-                    // terminalLocation.innerText = 'Terminal Location: ' + machines[0].LOCATION_NAME
-                    // machineName1.innerText = machines[0].MACHINE_NAME 
-                    // machineName2.innerText = machines[1].MACHINE_NAME
-                    // machineNumber1.innerText = machines[0].MACHINE_NUMBER
-                    // machineNumber2.innerText = machines[1].MACHINE_NUMBER
-
             }
             this.displayTheTerminalData = async function (terminal) {
                     this.terminalObject = {}
@@ -794,9 +826,50 @@
 
         const skip = 5;
         window.machineChart = new MachineChart(skip);
-        await window.machineChart.getDateRange(moment().subtract(3, 'month'), moment(), 'THREE_MONTH', true);
+        await window.machineChart.getDateRange(moment().subtract(3, 'month'), moment(), 'THREE_MONTH', false);
         window.machineChart.updateData = { start: moment().subtract(3, 'month'), end: moment(), dayName: 'THREE_MONTH' };
         pageSetUp()
+
+        
+ 
+        window.hzBarColors = [
+            {
+                backgroundColor: 'rgba(210, 7, 7, 1)',
+                borderColor: 'rgba(255, 99, 132, 1)',             
+            },
+            {
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',             
+            },
+            {
+                backgroundColor: 'rgba(170, 2, 2, 1)',
+                borderColor: 'rgba(140, 7, 4, 1)',             
+            },
+            {
+                backgroundColor: 'rgba(134, 56, 90, 1)',
+                borderColor: 'rgba(255, 99, 132, 1)',             
+            },
+            // {
+            //     backgroundColor: 'rgba(210, 7, 7, 1)',
+            //     borderColor: 'rgba(255, 99, 132, 1)',             
+            // },
+            // {
+            //     backgroundColor: 'rgba(210, 7, 7, 1)',
+            //     borderColor: 'rgba(255, 99, 132, 1)',             
+            // },
+            // {
+            //     backgroundColor: 'rgba(210, 7, 7, 1)',
+            //     borderColor: 'rgba(255, 99, 132, 1)',             
+            // },
+            // {
+            //     backgroundColor: 'rgba(210, 7, 7, 1)',
+            //     borderColor: 'rgba(255, 99, 132, 1)',             
+            // },
+            // {
+            //     backgroundColor: 'rgba(210, 7, 7, 1)',
+            //     borderColor: 'rgba(255, 99, 132, 1)',             
+            // }
+        ]
 
         var lineOptions = {
             ///Boolean - Whether grid lines are shown across the chart
@@ -858,6 +931,9 @@
             ]
         };
 
+        let holeData = {all: 0}
+        machineChart.machineLineData.map(el => holeData = {...holeData, all: holeData.all + el.CONTACTLESS_SALES})
+
         window.hzBarOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -896,7 +972,7 @@
                 ticks: {
                 padding: 15,
                 beginAtZero: true,
-                max: machineChart.machineLineData[0].CONTACTLESS_SALES + machineChart.machineLineData[1].CONTACTLESS_SALES,
+                max: holeData.all,
                 min: 0,
                 stepSize: 10,
                 //   callback: function(value, index, values) {
@@ -907,49 +983,32 @@
             }
         
             }
+            let arrBarHzData = []
+            machineChart.machineLineData.forEach((el, index) => {
+                arrBarHzData.push({
+                    label: el.MACHINE_NAME,
+                    data: [el.CONTACTLESS_SALES],
+                    backgroundColor: window.hzBarColors[index].backgroundColor,
+                    borderColor: window.hzBarColors[index].borderColor,
+                    borderWidth: 2,
+                
+                },)
+            })
+            arrBarHzData.push({
+                label: 'Both',
+                data: [holeData.all],
+                backgroundColor: [
+                    'rgba(255, 206, 86, 0.2)',
+            
+                ],
+                borderColor: [
+                    'rgba(255, 206, 86, 1)',
+                ],
+                borderWidth: 2,
+            
+            })
 
-             window.hzBarDataSet = [{
-            label: machineChart.machineLineData[0].MACHINE_NAME,
-            data: [machineChart.machineLineData[0].CONTACTLESS_SALES,],
-            backgroundColor: [
-                'rgba(210, 7, 7, 1)',
-        
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-
-            ],
-            borderWidth: 2,
-        
-        },
-        {
-            label: machineChart.machineLineData[1].MACHINE_NAME,
-            data: [machineChart.machineLineData[1].CONTACTLESS_SALES, ],
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.2)',
-        
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 1)',
-            ],
-            borderWidth: 2,
-        
-        },
-        {
-            label: 'Both',
-            data: [machineChart.machineLineData[0].CONTACTLESS_SALES + machineChart.machineLineData[1].CONTACTLESS_SALES],
-            backgroundColor: [
-                'rgba(255, 206, 86, 0.2)',
-        
-            ],
-            borderColor: [
-                'rgba(255, 206, 86, 1)',
-            ],
-            borderWidth: 2,
-        
-        }
-        ]
-
+        window.hzBarDataSet = arrBarHzData
         let canvas = document.getElementById("linechart_machine");
         var ctx = canvas.getContext("2d");
         var myNewChart = new Chart(ctx, {
