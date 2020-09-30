@@ -746,11 +746,11 @@
                             fullTerminalObject[el].forEach((item) => {
                                 console.log(item.machineName)
                                 let machineName_p = document.createElement('p')
-                                machineName_p.innerText = item.machineName
-                                let machineNumber_p = document.createElement('p')
-                                machineNumber_p.innerText = item.machineNumber
+                                machineName_p.innerText = item.machineName + '(' + item.machineNumber + ')'
+                                // let machineNumber_p = document.createElement('p')
+                                // machineNumber_p.innerText = item.machineNumber
 
-                                machineDiv.append(machineNumber_p)
+                                //machineDiv.append(machineNumber_p)
                                 machineDiv.append(machineName_p)
 
                                 

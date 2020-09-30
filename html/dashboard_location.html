@@ -190,8 +190,8 @@
                                                     <div class="dashboard_machine_margin">
                                                         <h2>Sales</h2>
                                                         <ul class="dashboard_machine_link" style="display: flex; flex-direction: column;">
-                                                            <li class="color_bgbox5"><span></span>Contactless sales</li>
-                                                            <li class="color_bgbox6"><span></span> Cashless sale</li>
+                                                            <li class="color_bgbox5"><span></span>Cashless sale</li>
+                                                            <li class="color_bgbox6"><span></span>Cash sale</li>
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -247,7 +247,7 @@
                                                             <li class="cash_sales_icon1"><span></span>App sales</li>
                                                             <li class="cash_sales_icon2"><span></span>Cash sales</li>
                                                             <li class="cash_sales_icon3"><span></span>Contactless sales</li>
-                                                            <li class="cash_sales_icon4"><span></span>Contactless + App sales</li>
+                                                            <li class="cash_sales_icon4"><span></span>Total sales</li>
                                                         </ul>
                                                     </div>
                                                     <div class="dashboard_current_left1" style='width: 600px;' id='parent_lineChart' >
@@ -734,8 +734,7 @@
                             CONTACTLESS_SALES: 0,
                             date: ''
                         });
-
-                            let machine = this.machineList.filter(item => item.MACHINE_NUMBER == machineFilters);
+                            let machine = this.machineList.filter(item => item.MACHINE_NAME + '(' + item.MACHINE_NUMBER + ')' == machineFilters);
                             this.allData.map((el) => {
                             Object.keys(this.dates).map(item => {
                                 if (item === el.TXN_DATE && el.MACHINE_NUMBER === machine[0].MACHINE_NUMBER) {
@@ -1029,6 +1028,7 @@
                         filterData.map((machine) => {
                             return result = {...result, APP_CONTACTLESS_SALES: Number(result['APP_CONTACTLESS_SALES']) + Number(machine.APP_SALES) + Number(machine.CONTACTLESS_SALES), CASH_SALES:Number(result['CASH_SALES']) + Number(machine.CASH_SALES)}
                         })      
+                        console.log(result)
                         const pieData = [
                             {
                                 value: result.APP_CONTACTLESS_SALES,
@@ -1081,7 +1081,7 @@
                         this.machineList.map(item => {
                             option = document.createElement("option");
                             option.value = item.MACHINE_NUMBER;
-                            option.text = item.MACHINE_NUMBER;
+                            option.text = item.MACHINE_NAME + '(' + item.MACHINE_NUMBER + ')';
                             selectDOM.add(option);
                             if(!(item.LOCATION_NAME in window.locationObject)) {
                                 window.locationObject[item.LOCATION_NAME] = item.LOCATION_NAME;
@@ -1193,7 +1193,7 @@
                         this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                         this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
                         this.contactlessSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES);
-                        this.sumSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES + this.dates[el].APP_SALES);
+                        this.sumSales = Object.keys(this.dates).map(el => this.dates[el].CONTACTLESS_SALES + this.dates[el].APP_SALES + this.dates[el].CASH_SALES);
                         this.chartDates = Object.keys(this.dates).map(el => this.dates[el].date);
                         console.log(this.chartDates, Object.keys(this.dates), isCompressed)
                         this.lineData = {
@@ -1332,8 +1332,8 @@
                 //----------------------DEPRECATED (OLD VERSION OF CHART JS)-------------------
                 window.lineOptions = {
             ///Boolean - Whether grid lines are shown across the chart
+            
             scaleShowGridLines: true,
-            //String - Colour of the grid lines
             scaleGridLineColor: "rgba(0,0,0,.05)",
             //Number - Width of the grid lines
             scaleGridLineWidth: 1,
