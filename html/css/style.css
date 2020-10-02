@@ -506,7 +506,7 @@ table.dataTable tbody th, table.dataTable tbody td{ vertical-align:middle; text-
 
 
 .dashboard_weekly_right{ padding:15px 5px 15px 15px; box-shadow:0 3px 10px #ccc; background:#fff; border-radius:10px;}
-.dashboard_weekly_titel1{ overflow:hidden; display:block; text-align:center; padding:15px 0 35px; margin-top: 10px;}
+.dashboard_weekly_titel1{ overflow:hidden; display:block; text-align:center; padding:15px 0 25px; margin-top: 10px;}
 .dashboard_weekly_titel1 h3{ font-size:16px; padding:0 0 5px;margin: 0 0 7px; position:relative;}
 .dashboard_weekly_titel1 h3:before{ height:1px; width:120px; display:block; position:absolute; content:''; bottom:0; left:50%; margin:0 0 0 -60px; background:#8CD600; }
 

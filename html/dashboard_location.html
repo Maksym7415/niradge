@@ -184,7 +184,7 @@
                                         <div class="dashboard_row_clear">
                                             <div class="dashboard_chartholder_left">
                                                 <div class="dashboard_piechart_left" >
-                                                    <div class="canvas_piechart" id = 'canvas_piechart1'>
+                                                    <div class='canvas_piechart' id='canvas_piechart1'>
                                                         <canvas id="pieChart1" height="360" width="360"></canvas>
                                                     </div>
                                                     <div class="dashboard_machine_margin">
@@ -197,7 +197,7 @@
                                                 </div>
 
                                                 <div class="dashboard_piechart_right flex flex-column" id='mainPieRightDiv'>
-                                                    <div class="canvas_piechart" id='canvas_piechart'>
+                                                    <div class='canvas_piechart' id='canvas_piechart'>
                                                         <canvas id="pieChart" height="360" width="360"></canvas>
                                                     </div>
         
@@ -243,15 +243,9 @@
                                                 <div class="dashboard_weekly_right" style='margin-top: 60px;'>
                                                     <div class="dashboard_weekly_titel1 w-full">
                                                         <h3>Weekly Sales / Cash Drop</h3>
-                                                        <ul>
-                                                            <li class="cash_sales_icon1"><span></span>App sales</li>
-                                                            <li class="cash_sales_icon2"><span></span>Cash sales</li>
-                                                            <li class="cash_sales_icon3"><span></span>Contactless sales</li>
-                                                            <li class="cash_sales_icon4"><span></span>Total sales</li>
-                                                        </ul>
                                                     </div>
-                                                    <div class="dashboard_current_left1" style='width: 600px;' id='parent_lineChart' >
-                                                        <canvas id="lineChart" height="250" width="600"></canvas>
+                                                    <div id='parent_lineChart' >
+                                                        <canvas id="lineChart" height="400px" width="600"></canvas>
                                                     </div>
                                                 </div>
         
@@ -292,9 +286,9 @@
         
         <script src="js/app.min.js"></script>
         
+        <!-- <script src="js/chart.min.js"></script> -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
         
-        <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script> -->
-        <script src="js/chart.min.js"></script>
         
         <!--<script type="text/javascript" src="js/daterangepicker.js"></script>-->
         <script type="text/javascript" src="js/dp.js"></script>
@@ -328,7 +322,78 @@
                 });
             })(jQuery);
         
-        
+    window.pieOptions = {
+        tooltips: {
+            enabled: true
+        },
+        legend: {
+            display: false,
+            position: 'bottom'  // <- the important part
+        },
+        //Boolean - Whether we should show a stroke on each segment
+        segmentShowStroke: true,
+            //String - The colour of each segment stroke
+            segmentStrokeColor: "#fff",
+            //Number - The width of each segment stroke
+            segmentStrokeWidth: 0,
+            //Number - Amount of animation steps
+            animationSteps: 100,
+            //String - types of animation
+            animationEasing: "easeOutBounce",
+            //Boolean - Whether we animate the rotation of the Doughnut
+            animateRotate: true,
+            //Boolean - Whether we animate scaling the Doughnut from the centre
+            animateScale: false,
+            //Boolean - Re-draw chart on page resize
+            responsive: true,
+            //String - A legend template
+    };
+
+    window.lineOptions = {
+        scales: {
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    fontSize: 18,
+                    labelString: 'Pounds, £'
+                }
+            }],
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    fontSize: 18,
+                    labelString: 'Dates'
+                }
+            }],
+        },
+        // scaleShowGridLines: true,
+        // scaleGridLineColor: "rgba(0,0,0,.05)",
+        // //Number - Width of the grid lines
+        // scaleGridLineWidth: 1,
+        // //Boolean - Whether the line is curved between points
+        // bezierCurve: true,
+        // //Number - Tension of the bezier curve between points
+        // bezierCurveTension: 0.4,
+        // //Boolean - Whether to show a dot for each point
+        // pointDot: true,
+        // //Number - Radius of each point dot in pixels
+        // pointDotRadius: 4,
+        // //Number - Pixel width of point dot stroke
+        // pointDotStrokeWidth: 1,
+        // //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+        // pointHitDetectionRadius: 20,
+        // //Boolean - Whether to show a stroke for datasets
+        // datasetStroke: true,
+        // //Number - Pixel width of dataset stroke
+        // datasetStrokeWidth: 3,
+        // //Boolean - Whether to fill the dataset with a colour
+        // datasetFill: true,
+        // //Boolean - Re-draw chart on page resize
+        responsive: true,
+        //String - A legend template
+        maintainAspectRatio: false,
+    }
+
      function selectRun(className) {
         var x, i, j, selElmnt, a, b, c;
         /*look for any elements with the class "custom-select":*/
@@ -710,11 +775,16 @@
                         });
                         let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
                         this.displayData(true, new Date(window.start), true);
-                        this.topFive(this.allData)
-                        this.pieChartAllMachines(this.allData)
-                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        this.topFive(this.allData);
+                        this.pieChartAllMachines(this.allData);
+                        // const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart = new Chart(ctx, {type: 'line', data: machineChart.lineData, options: window.lineOptions});
+                        // const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        const myNewChart1 = new Chart(pieCtx, {type: 'pie', data: machineChart.pieDataMachines, options: window.pieOptions});
+                        // const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1, {type: 'pie', data: machineChart.pieDataAllMachines, options: window.pieOptions});
+
+                        // var myNewChart = new Chart(ctx, {type: 'pie', data: pieAll, options: pieOptions});
                         this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
@@ -754,10 +824,14 @@
                         });
                         let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
                         this.displayData(true, new Date(window.start) , false, true);
-                        this.pieChartAllMachines(this.allData.filter(item => item.MACHINE_NUMBER == machineFilters))
-                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        this.pieChartAllMachines(this.allData.filter(item => item.MACHINE_NUMBER == machineFilters));
+                        // const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart = new Chart(ctx, {type: 'line', data: machineChart.lineData, options: window.lineOptions});
+                        // const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        console.log("OPTIONS", window.pieOptions);
+                        const myNewChart1 = new Chart(pieCtx, {type: 'pie', data: machineChart.pieDataMachines, options: window.pieOptions});
+                        // const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1, {type: 'pie', data: machineChart.pieDataAllMachines, options: window.pieOptions});
                         this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
@@ -797,11 +871,16 @@
                         });
                         let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
                         this.displayData(true, window.start , false, true);
-                        this.topFive(fitlerData)
-                        this.pieChartAllMachines(fitlerData)
-                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        this.topFive(fitlerData);
+                        this.pieChartAllMachines(fitlerData);
+                        // const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart = new Chart(ctx, {type: 'line', data: machineChart.lineData, options: window.lineOptions});
+                        // const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        console.log("OPTIONS", window.pieOptions);
+                        const myNewChart1 = new Chart(pieCtx, {type: 'pie', data: machineChart.pieDataMachines, options: window.pieOptions});
+                        // const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1, {type: 'pie', data: machineChart.pieDataAllMachines, options: window.pieOptions});
+                        
                         this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
@@ -842,10 +921,15 @@
 
                         let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
                         this.displayData(true, window.start , false, true);
-                        this.pieChartAllMachines(fitlerLocationData.filter(item => item.MACHINE_NUMBER === machineFilters))
-                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        this.pieChartAllMachines(fitlerLocationData.filter(item => item.MACHINE_NUMBER === machineFilters));
+                        // const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart = new Chart(ctx, {type: 'line', data: machineChart.lineData, options: window.lineOptions});
+                        // const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        console.log("OPTIONS", window.pieOptions);
+                        const myNewChart1 = new Chart(pieCtx, {type: 'pie', data: machineChart.pieDataMachines, options: window.pieOptions});
+                        // const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1, {type: 'pie', data: machineChart.pieDataAllMachines, options: window.pieOptions});
+
                         this.dates = this.generateDataObject(this.getMs(window.start), this.getMs(window.end), {
                             APP_SALES: 0,
                             CASH_SALES: 0,
@@ -878,7 +962,8 @@
                             else return result[machine.MACHINE_NUMBER] = machine
                         })
 
-                        const arr = Object.values(result).sort((a,b) => Number(a.SUM) > Number(b.SUM)  ? -1 : 1 ).slice(0, 5)
+                        const arr = Object.values(result).sort((a,b) => Number(a.SUM) > Number(b.SUM)  ? -1 : 1 ).slice(0, 5);
+                        console.log('TEST', arr);
                         const fiveMachines = document.getElementById('fiveMachines')
                         const isElem = document.getElementsByClassName('color_bgbox1')
                         let one, two, three, four, five, span1, span2, span3, span4, span5;
@@ -984,39 +1069,48 @@
                         // fiveMachines.append(four)
                         // fiveMachines.append(five)
 
-                        const pieData = [
-                            {
-                                value: arr[0].SUM,
-                                color: "#CAF27D",
-                                highlight: "#CAF27D",
-                                //label: arr[0].MACHINE_NAME
-                            },
-                            {
-                                value: arr[1].SUM,
-                                color: "#7fff00",
-                                highlight: "#7fff00",
-                                //label: arr[1].MACHINE_NAME
-                            },
-                            {
-                                value: arr[2].SUM,
-                                color: "#FFFFFF",
-                                highlight: "#FFFFFF",
-                                //label: arr[2].MACHINE_NAME
-                            },
-                            {
-                                value: arr[3].SUM,
-                                color: "#00581E",
-                                highlight: "#00581E",
-                                //label: arr[3].MACHINE_NAME
-                            },
-                            {
-                                value: arr[4].SUM,
-                                color: "#8CD600",
-                                highlight: "#8CD600",
-                                //label: arr[4].MACHINE_NAME
-                            }
-                        ];
-                        this.pieDataMachines = pieData
+                        // const pieData = [
+                        //     {
+                        //         value: arr[0].SUM,
+                        //         color: "#CAF27D",
+                        //         highlight: "#CAF27D",
+                        //         //label: arr[0].MACHINE_NAME
+                        //     },
+                        //     {
+                        //         value: arr[1].SUM,
+                        //         color: "#7fff00",
+                        //         highlight: "#7fff00",
+                        //         //label: arr[1].MACHINE_NAME
+                        //     },
+                        //     {
+                        //         value: arr[2].SUM,
+                        //         color: "#FFFFFF",
+                        //         highlight: "#FFFFFF",
+                        //         //label: arr[2].MACHINE_NAME
+                        //     },
+                        //     {
+                        //         value: arr[3].SUM,
+                        //         color: "#00581E",
+                        //         highlight: "#00581E",
+                        //         //label: arr[3].MACHINE_NAME
+                        //     },
+                        //     {
+                        //         value: arr[4].SUM,
+                        //         color: "#8CD600",
+                        //         highlight: "#8CD600",
+                        //         //label: arr[4].MACHINE_NAME
+                        //     }
+                        // ];
+
+                        const pieData = {
+                            datasets: [{
+                                data: [arr[0].SUM, arr[1].SUM, arr[2].SUM, arr[3].SUM, arr[4].SUM],
+                                backgroundColor: ["#CAF27D", "#7fff00", "#FFFFFF", "#00581E", "#8CD600"]
+                            }],
+                            labels: [arr[0].MACHINE_NAME, arr[1].MACHINE_NAME, arr[2].MACHINE_NAME, arr[3].MACHINE_NAME, arr[4].MACHINE_NAME]
+                        }
+                        this.pieDataMachines = pieData;
+                        console.log('PIE DATA MACHINES', this.pieDataMachines);
                         // this.res.KPRESPONSE.CHART_DATA_LIST.sort((a,b) => Number(a.CASH_SALES) > Number(b.CASH_SALES)  ? -1 : 1 )
                     }
 
@@ -1029,21 +1123,32 @@
                             return result = {...result, APP_CONTACTLESS_SALES: Number(result['APP_CONTACTLESS_SALES']) + Number(machine.APP_SALES) + Number(machine.CONTACTLESS_SALES), CASH_SALES:Number(result['CASH_SALES']) + Number(machine.CASH_SALES)}
                         })      
                         console.log(result)
-                        const pieData = [
-                            {
-                                value: result.APP_CONTACTLESS_SALES,
-                                color: "#CAF27D",
-                                highlight: "#CAF27D",
-                                //label: arr[0].MACHINE_NAME
-                            },
-                            {
-                                value: result.CASH_SALES,
-                                color: "#7fff00",
-                                highlight: "#7fff00",
-                                //label: arr[1].MACHINE_NAME
-                            },
-                        ];
-                        this.pieDataAllMachines = pieData
+                        // const pieData = [
+                        //     {
+                        //         value: result.APP_CONTACTLESS_SALES,
+                        //         color: "#CAF27D",
+                        //         highlight: "#CAF27D",
+                        //         //label: arr[0].MACHINE_NAME
+                        //     },
+                        //     {
+                        //         value: result.CASH_SALES,
+                        //         color: "#7fff00",
+                        //         highlight: "#7fff00",
+                        //         //label: arr[1].MACHINE_NAME
+                        //     },
+                        // ];
+
+                        const pieData = {
+                            datasets: [{
+                                data: [result.APP_CONTACTLESS_SALES, result.CASH_SALES],
+                                backgroundColor: ["#CAF27D", "#7fff00"]
+                            }],
+                            labels: ['Cashless sale', 'Cash sale']
+                        }
+
+                        
+                        this.pieDataAllMachines = pieData;
+                        console.log('PIE DATA MACHINES', this.pieDataAllMachines);
                     }
 
                     this.generateDataObject = function (start, end, param) {
@@ -1198,47 +1303,27 @@
                         console.log(this.chartDates, Object.keys(this.dates), isCompressed)
                         this.lineData = {
                             labels: this.chartDates,
-                            datasets: [ {
-                                label: "My First dataset",
-                                fillColor: "rgba(0,0,0,0)",
-                                strokeColor: "#00581E",
-                                pointColor: "#00581E",
-                                pointStrokeColor: "#00581E",
-                                pointHighlightFill: "#00581E",
-                                pointHighlightStroke: "#00581E",
+                            datasets: [{
+                                label: "App sales",
+                                backgroundColor: "rgba(0,88,30,0.1)",
+                                borderColor: "#00581E",
                                 data: this.appSales
-                            },
-                                {
-                                    label: "My Second dataset",
-                                    fillColor: "rgba(0,0,0,0)",
-                                    strokeColor: "#FFB200",
-                                    pointColor: "#FFB200",
-                                    pointStrokeColor: "#FFB200",
-                                    pointHighlightFill: "#FFB200",
-                                    pointHighlightStroke: "#FFB200",
-                                    data: this.cashSales
-                                },
-                                {
-                                    label: "My Second dataset",
-                                    fillColor: "rgba(0,0,0,0)",
-                                    strokeColor: "#8CD600",
-                                    pointColor: "#8CD600",
-                                    pointStrokeColor: "#8CD600",
-                                    pointHighlightFill: "#8CD600",
-                                    pointHighlightStroke: "#8CD600",
-                                    data: this.contactlessSales
-                                },
-                                {
-                                    label: "My Second dataset",
-                                    fillColor: "rgba(0,0,0,0)",
-                                    strokeColor: "#e64312",
-                                    pointColor: "#e64312",
-                                    pointStrokeColor: "#e64312",
-                                    pointHighlightFill: "#e64312",
-                                    pointHighlightStroke: "#e64312",
-                                    data: this.sumSales
-                                }
-                            ]
+                            }, {
+                                label: "Cash sales",
+                                backgroundColor: "rgba(255,178,0,0.1)",
+                                borderColor: "#FFB200",
+                                data: this.cashSales
+                            }, {
+                                label: "Contactless sales",
+                                backgroundColor: "rgba(140,214,0,0.1)",
+                                borderColor: "#8CD600",
+                                data: this.contactlessSales
+                            }, {
+                                label: "Total sales",
+                                backgroundColor: "rgba(251,62,62,0.1)",
+                                borderColor: "#f97f7f",
+                                data: this.sumSales
+                            }],
                         };
                     }
                     this.displayOneMachineData = async function (machineNumber, location) {
@@ -1263,9 +1348,12 @@
                         });
                         let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
                         this.displayData(false, '2020-01-01', false);
-                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        // const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart = new Chart(ctx, {type: 'line', data: machineChart.lineData, options: window.lineOptions});
+                        // const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        const myNewChart1 = new Chart(pieCtx, {type: 'pie', data: machineChart.pieDataMachines, options: window.pieOptions});
+                        // const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1, {type: 'pie', data: machineChart.pieDataAllMachines, options: window.pieOptions});
                         return;
                         }
                         else {
@@ -1287,9 +1375,12 @@
                         });
                         let { ctx, pieCtx, pieCtx1 } = this.createCanvas();
                         this.displayData(false, '2020-01-01', false);
-                        const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-                        const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
-                        const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        // const myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                        const myNewChart = new Chart(ctx, {type: 'line', data: machineChart.lineData, options: window.lineOptions});
+                        // const myNewChart1 = new Chart(pieCtx).Pie(machineChart.pieDataMachines, window.pieOptions);
+                        const myNewChart1 = new Chart(pieCtx, {type: 'pie', data: machineChart.pieDataMachines, options: window.pieOptions});
+                        // const myNewChart2 = new Chart(pieCtx1).Pie(machineChart.pieDataAllMachines, window.pieOptions);
+                        const myNewChart2 = new Chart(pieCtx1, {type: 'pie', data: machineChart.pieDataAllMachines, options: window.pieOptions});
                     }
                     this.createCanvas = function () {
                         document.getElementById("lineChart").remove();
@@ -1330,35 +1421,35 @@
                 pageSetUp()
         
                 //----------------------DEPRECATED (OLD VERSION OF CHART JS)-------------------
-                window.lineOptions = {
-            ///Boolean - Whether grid lines are shown across the chart
+        //         window.lineOptions = {
+        //     ///Boolean - Whether grid lines are shown across the chart
             
-            scaleShowGridLines: true,
-            scaleGridLineColor: "rgba(0,0,0,.05)",
-            //Number - Width of the grid lines
-            scaleGridLineWidth: 1,
-            //Boolean - Whether the line is curved between points
-            bezierCurve: true,
-            //Number - Tension of the bezier curve between points
-            bezierCurveTension: 0.4,
-            //Boolean - Whether to show a dot for each point
-            pointDot: true,
-            //Number - Radius of each point dot in pixels
-            pointDotRadius: 4,
-            //Number - Pixel width of point dot stroke
-            pointDotStrokeWidth: 1,
-            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-            pointHitDetectionRadius: 20,
-            //Boolean - Whether to show a stroke for datasets
-            datasetStroke: true,
-            //Number - Pixel width of dataset stroke
-            datasetStrokeWidth: 3,
-            //Boolean - Whether to fill the dataset with a colour
-            datasetFill: true,
-            //Boolean - Re-draw chart on page resize
-            responsive: true,
-            //String - A legend template
-        };
+        //     scaleShowGridLines: true,
+        //     scaleGridLineColor: "rgba(0,0,0,.05)",
+        //     //Number - Width of the grid lines
+        //     scaleGridLineWidth: 1,
+        //     //Boolean - Whether the line is curved between points
+        //     bezierCurve: true,
+        //     //Number - Tension of the bezier curve between points
+        //     bezierCurveTension: 0.4,
+        //     //Boolean - Whether to show a dot for each point
+        //     pointDot: true,
+        //     //Number - Radius of each point dot in pixels
+        //     pointDotRadius: 4,
+        //     //Number - Pixel width of point dot stroke
+        //     pointDotStrokeWidth: 1,
+        //     //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+        //     pointHitDetectionRadius: 20,
+        //     //Boolean - Whether to show a stroke for datasets
+        //     datasetStroke: true,
+        //     //Number - Pixel width of dataset stroke
+        //     datasetStrokeWidth: 3,
+        //     //Boolean - Whether to fill the dataset with a colour
+        //     datasetFill: true,
+        //     //Boolean - Re-draw chart on page resize
+        //     responsive: true,
+        //     //String - A legend template
+        // };
                 //----------------------------------------
         
         
@@ -1371,27 +1462,28 @@
                 //     options: window.lineOptions
                 // });
                 var ctx = document.getElementById("lineChart").getContext("2d");
-                var myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
-
-                var pieOptions = {
-            //Boolean - Whether we should show a stroke on each segment
-            segmentShowStroke: true,
-            //String - The colour of each segment stroke
-            segmentStrokeColor: "#fff",
-            //Number - The width of each segment stroke
-            segmentStrokeWidth: 0,
-            //Number - Amount of animation steps
-            animationSteps: 100,
-            //String - types of animation
-            animationEasing: "easeOutBounce",
-            //Boolean - Whether we animate the rotation of the Doughnut
-            animateRotate: true,
-            //Boolean - Whether we animate scaling the Doughnut from the centre
-            animateScale: false,
-            //Boolean - Re-draw chart on page resize
-            responsive: true,
-            //String - A legend template
-        };
+                // var myNewChart = new Chart(ctx).Line(machineChart.lineData, window.lineOptions);
+                var myNewChart = new Chart(ctx, {type: 'line', data: machineChart.lineData, options: window.lineOptions});
+                    
+        //         var pieOptions = {
+        //     //Boolean - Whether we should show a stroke on each segment
+        //     segmentShowStroke: true,
+        //     //String - The colour of each segment stroke
+        //     segmentStrokeColor: "#fff",
+        //     //Number - The width of each segment stroke
+        //     segmentStrokeWidth: 0,
+        //     //Number - Amount of animation steps
+        //     animationSteps: 100,
+        //     //String - types of animation
+        //     animationEasing: "easeOutBounce",
+        //     //Boolean - Whether we animate the rotation of the Doughnut
+        //     animateRotate: true,
+        //     //Boolean - Whether we animate scaling the Doughnut from the centre
+        //     animateScale: false,
+        //     //Boolean - Re-draw chart on page resize
+        //     responsive: true,
+        //     //String - A legend template
+        // };
 
 
 
@@ -1409,7 +1501,8 @@
         // pieDiv.appendChild(pieCanvas);     
         // document.getElementById('mainPieRightDiv').appendChild(pieDiv);      
         var ctx1 = document.getElementById("pieChart").getContext("2d");
-        var myNewChart1 = new Chart(ctx1).Pie(machineChart.pieDataMachines, pieOptions);
+        // var myNewChart1 = new Chart(ctx1).Pie(machineChart.pieDataMachines, pieOptions);
+        var myNewChart1 = new Chart(ctx1, {type: 'pie', data: machineChart.pieDataMachines, options: pieOptions});
 
         // var pieData1 = [
         //     {
@@ -1426,365 +1519,10 @@
         //     }
         // ];
             var ctx2 = document.getElementById("pieChart1").getContext("2d");
-            var myNewChart = new Chart(ctx2).Pie(machineChart.pieDataAllMachines, pieOptions);
+            // var myNewChart = new Chart(ctx2).Pie(machineChart.pieDataAllMachines, pieOptions);
+            var myNewChart = new Chart(ctx2, {type: 'pie', data: machineChart.pieDataAllMachines, options: pieOptions});
+            
             
             })()
         </script>
-        
-        
-        
-        <script type="text/javascript">
-        
-            $(document).ready(function () {
-        
-    
-
-        // PIE CHART
-
-        var pieOptions = {
-            //Boolean - Whether we should show a stroke on each segment
-            segmentShowStroke: true,
-            //String - The colour of each segment stroke
-            segmentStrokeColor: "#fff",
-            //Number - The width of each segment stroke
-            segmentStrokeWidth: 0,
-            //Number - Amount of animation steps
-            animationSteps: 100,
-            //String - types of animation
-            animationEasing: "easeOutBounce",
-            //Boolean - Whether we animate the rotation of the Doughnut
-            animateRotate: true,
-            //Boolean - Whether we animate scaling the Doughnut from the centre
-            animateScale: false,
-            //Boolean - Re-draw chart on page resize
-            responsive: true,
-            //String - A legend template
-        };
-
-
-
-        // var pieData = [
-        //     {
-        //         value: 10000,
-        //         color: "#CAF27D",
-        //         highlight: "#CAF27D",
-        //         label: "Grey"
-        //     },
-        //     {
-        //         value: 15000,
-        //         color: "#D9F4B0",
-        //         highlight: "#D9F4B0",
-        //         label: "Grey"
-        //     },
-        //     {
-        //         value: 20000,
-        //         color: "#FFFFFF",
-        //         highlight: "#FFFFFF",
-        //         label: "Grey"
-        //     },
-        //     {
-        //         value: 50000,
-        //         color: "#00581E",
-        //         highlight: "#00581E",
-        //         label: "Blue"
-        //     },
-        //     {
-        //         value: 60000,
-        //         color: "#8CD600",
-        //         highlight: "#8CD600",
-        //         label: "Red"
-        //     }
-        // ];
-
-        // // render chart
-        // var ctx = document.getElementById("pieChart").getContext("2d");
-        // var myNewChart = new Chart(ctx).Pie(pieData, pieOptions);
-
-
-        
-        // END PIE CHART
-
-    })
-
-</script>
-
-
-<!--<script type="text/javascript">-->
-
-<!--    $(document).ready(function () {-->
-
-<!--        (async () => {-->
-
-<!--        pageSetUp();-->
-
-<!--        function getRandomColor() {-->
-<!--            var letters = '0123456789ABCDEF';-->
-<!--            var color = '#';-->
-<!--            for (var i = 0; i < 6; i++) {-->
-<!--                color += letters[Math.floor(Math.random() * 16)];-->
-<!--            }-->
-<!--            return color;-->
-<!--        }-->
-
-<!--        const getMachineChartTime = (result, name) => {-->
-<!--            switch(name) {-->
-<!--                case 'DASHBOARD_PIE_ALL': {-->
-<!--                    let pieAll = [];-->
-<!--                    result.map((item, index) => {-->
-<!--						pieAll.push({...item, color: getRandomColor()})-->
-<!--                    });-->
-<!--                    return pieAll-->
-<!--                }-->
-<!--                case 'DASHBOARD_PIE_MACHINES': {-->
-<!--                    let pieFive = [];-->
-<!--                    result.map((item, index) => {-->
-<!--						pieFive.push({...item, color: getRandomColor()})-->
-<!--                    });-->
-<!--                    return pieFive-->
-<!--                }-->
-<!--                case 'DASHBOARD_WEEKLY_SALES': {-->
-<!--                    let appSales = [], cashSales = [], cashlessSales = [], data = [];-->
-<!--                    result.map((item, index) => {-->
-<!--						appSales.push(item.APP_SALES);-->
-<!--						cashSales.push(item.CASH_SALES);-->
-<!--						cashlessSales.push(item.CONTACTLESS_SALES);-->
-<!--						data.push(item.TXN_DATE);-->
-<!--                    });-->
-<!--                    return {appSales, cashSales, cashlessSales, data}-->
-<!--                }-->
-<!--                case 'DASHBOARD_CASH_DROP': {-->
-<!--                    let time = [], downtime = [], uptime = [];-->
-<!--                    result.map((item, index) => {-->
-<!--                        time.push(item.time);-->
-<!--                        downtime.push(item.downtime);-->
-<!--                        uptime.push(item.uptime);-->
-<!--                    });-->
-<!--                    return {downtime, uptime, time}-->
-<!--                }-->
-<!--                default:-->
-<!--                    return;-->
-<!--            }-->
-<!--		}-->
-
-<!--	    const response1 = await fetch('http://localhost:3000/DASHBOARD_PIE_ALL');-->
-<!--	    const res1 = await response1.json();-->
-<!--        const pieAll = getMachineChartTime(res1, 'DASHBOARD_PIE_ALL');-->
-
-<!--        const response2 = await fetch('http://localhost:3000/DASHBOARD_PIE_MACHINES');-->
-<!--	    const res2 = await response2.json();-->
-<!--        const pieFive = getMachineChartTime(res2, 'DASHBOARD_PIE_MACHINES');-->
-
-<!--        const response3 = await fetch('http://localhost:3000/DASHBOARD_WEEKLY_SALES');-->
-<!--	    const res3 = await response3.json();-->
-<!--        const {appSales, cashSales, cashlessSales, data} = getMachineChartTime(res3, 'DASHBOARD_WEEKLY_SALES');-->
-
-<!--        const response4 = await fetch('http://localhost:3000/DASHBOARD_CASH_DROP');-->
-<!--	    const res4 = await response4.json();-->
-<!--        const {downtime, uptime, time} = getMachineChartTime(res4, 'DASHBOARD_CASH_DROP');-->
-
-<!--        var lineOptions = {-->
-<!--            ///Boolean - Whether grid lines are shown across the chart-->
-<!--            scaleShowGridLines: true,-->
-<!--            //String - Colour of the grid lines-->
-<!--            scaleGridLineColor: "rgba(0,0,0,.05)",-->
-<!--            //Number - Width of the grid lines-->
-<!--            scaleGridLineWidth: 1,-->
-<!--            //Boolean - Whether the line is curved between points-->
-<!--            bezierCurve: true,-->
-<!--            //Number - Tension of the bezier curve between points-->
-<!--            bezierCurveTension: 0.4,-->
-<!--            //Boolean - Whether to show a dot for each point-->
-<!--            pointDot: true,-->
-<!--            //Number - Radius of each point dot in pixels-->
-<!--            pointDotRadius: 4,-->
-<!--            //Number - Pixel width of point dot stroke-->
-<!--            pointDotStrokeWidth: 1,-->
-<!--            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point-->
-<!--            pointHitDetectionRadius: 20,-->
-<!--            //Boolean - Whether to show a stroke for datasets-->
-<!--            datasetStroke: true,-->
-<!--            //Number - Pixel width of dataset stroke-->
-<!--            datasetStrokeWidth: 3,-->
-<!--            //Boolean - Whether to fill the dataset with a colour-->
-<!--            datasetFill: true,-->
-<!--            //Boolean - Re-draw chart on page resize-->
-<!--            responsive: true,-->
-<!--            //String - A legend template-->
-<!--        };-->
-<!--        console.log(data, time);-->
-<!--        var lineData = {-->
-<!--            labels: data,-->
-<!--            datasets: [-->
-<!--                {-->
-<!--                    label: "My First dataset",-->
-<!--                    fillColor: "rgba(0,0,0,0)",-->
-<!--                    strokeColor: "#00581E",-->
-<!--                    pointColor: "#00581E",-->
-<!--                    pointStrokeColor: "#00581E",-->
-<!--                    pointHighlightFill: "#00581E",-->
-<!--                    pointHighlightStroke: "#00581E",-->
-<!--                    data: appSales-->
-<!--                },-->
-<!--                {-->
-<!--                    label: "My Second dataset",-->
-<!--                    fillColor: "rgba(0,0,0,0)",-->
-<!--                    strokeColor: "#FFB200",-->
-<!--                    pointColor: "#FFB200",-->
-<!--                    pointStrokeColor: "#FFB200",-->
-<!--                    pointHighlightFill: "#FFB200",-->
-<!--                    pointHighlightStroke: "#FFB200",-->
-<!--                    data: cashSales-->
-<!--                },-->
-<!--                 {-->
-<!--                     label: "My Second dataset",-->
-<!--                     fillColor: "rgba(0,0,0,0)",-->
-<!--                     strokeColor: "#8CD600",-->
-<!--                     pointColor: "#8CD600",-->
-<!--                     pointStrokeColor: "#8CD600",-->
-<!--                     pointHighlightFill: "#8CD600",-->
-<!--                     pointHighlightStroke: "#8CD600",-->
-<!--                     data: cashlessSales-->
-<!--                 }-->
-<!--            ]-->
-<!--        };-->
-
-<!--        // render chart-->
-<!--        var ctx = document.getElementById("lineChart").getContext("2d");-->
-<!--        var myNewChart = new Chart(ctx).Line(lineData, lineOptions);-->
-
-<!--        // BAR CHART-->
-
-<!--        var barOptions = {-->
-<!--            //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value-->
-<!--            scaleBeginAtZero: true,-->
-<!--            //Boolean - Whether grid lines are shown across the chart-->
-<!--            scaleShowGridLines: true,-->
-<!--            //String - Colour of the grid lines-->
-<!--            scaleGridLineColor: "rgba(0,0,0,.05)",-->
-<!--            //Number - Width of the grid lines-->
-<!--            scaleGridLineWidth: 1,-->
-<!--            //Boolean - If there is a stroke on each bar-->
-<!--            barShowStroke: true,-->
-<!--            //Number - Pixel width of the bar stroke-->
-<!--            barStrokeWidth: 1,-->
-<!--            //Number - Spacing between each of the X value sets-->
-<!--            barValueSpacing: 0,-->
-<!--            //Number - Spacing between data sets within X values-->
-<!--            barDatasetSpacing: 0,-->
-<!--            //Boolean - Re-draw chart on page resize-->
-<!--            responsive: true,-->
-<!--            //String - A legend template-->
-<!--        }-->
-
-<!--        var barData = {-->
-<!--            labels: time,-->
-<!--            datasets: [-->
-<!--               {-->
-<!--                   label: "My First dataset",-->
-<!--                   fillColor: "#D9F4B0",-->
-<!--                   strokeColor: "#D9F4B0",-->
-<!--                   highlightFill: "#D9F4B0",-->
-<!--                   highlightStroke: "#D9F4B0",-->
-<!--                   data: downtime-->
-<!--               },-->
-<!--               {-->
-<!--                   label: "My Second dataset",-->
-<!--                   fillColor: "#8CD600",-->
-<!--                   strokeColor: "#8CD600",-->
-<!--                   highlightFill: "#8CD600",-->
-<!--                   highlightStroke: "#8CD600",-->
-<!--                   data: uptime-->
-<!--               }-->
-<!--            ]-->
-<!--        };-->
-
-<!--        // render chart-->
-<!--        var ctx = document.getElementById("barChart").getContext("2d");-->
-<!--        var myNewChart = new Chart(ctx).Bar(barData, barOptions);-->
-
-<!--        // END BAR CHART-->
-
-<!--        // PIE CHART-->
-
-<!--        var pieOptions = {-->
-<!--            //Boolean - Whether we should show a stroke on each segment-->
-<!--            segmentShowStroke: true,-->
-<!--            //String - The colour of each segment stroke-->
-<!--            segmentStrokeColor: "#fff",-->
-<!--            //Number - The width of each segment stroke-->
-<!--            segmentStrokeWidth: 0,-->
-<!--            //Number - Amount of animation steps-->
-<!--            animationSteps: 100,-->
-<!--            //String - types of animation-->
-<!--            animationEasing: "easeOutBounce",-->
-<!--            //Boolean - Whether we animate the rotation of the Doughnut-->
-<!--            animateRotate: true,-->
-<!--            //Boolean - Whether we animate scaling the Doughnut from the centre-->
-<!--            animateScale: false,-->
-<!--            //Boolean - Re-draw chart on page resize-->
-<!--            responsive: true,-->
-<!--            //String - A legend template-->
-<!--        };-->
-
-
-
-<!--        // var pieData = [-->
-<!--        //    {-->
-<!--        //        value: 10000,-->
-<!--        //        color: "#CAF27D",-->
-<!--        //        highlight: "#CAF27D",-->
-<!--        //        label: "Grey"-->
-<!--        //    },-->
-<!--        //     {-->
-<!--        //         value: 15000,-->
-<!--        //         color: "#D9F4B0",-->
-<!--        //         highlight: "#D9F4B0",-->
-<!--        //         label: "Grey"-->
-<!--        //     },-->
-<!--        //     {-->
-<!--        //         value: 20000,-->
-<!--        //         color: "#FFFFFF",-->
-<!--        //         highlight: "#FFFFFF",-->
-<!--        //         label: "Grey"-->
-<!--        //     },-->
-<!--        //     {-->
-<!--        //         value: 50000,-->
-<!--        //         color: "#00581E",-->
-<!--        //         highlight: "#00581E",-->
-<!--        //         label: "Blue"-->
-<!--        //     },-->
-<!--        //     {-->
-<!--        //         value: 60000,-->
-<!--        //         color: "#8CD600",-->
-<!--        //         highlight: "#8CD600",-->
-<!--        //         label: "Red"-->
-<!--        //     }-->
-<!--        // ];-->
-
-<!--        // render chart-->
-<!--        var ctx = document.getElementById("pieChart").getContext("2d");-->
-<!--        var myNewChart = new Chart(ctx).Pie(pieFive, pieOptions);-->
-
-
-<!--        // var pieData1 = [-->
-<!--        //   {-->
-<!--        //       value: 5000,-->
-<!--        //       color: "#00581E",-->
-<!--        //       highlight: "#00581E",-->
-<!--        //       label: "Grey"-->
-<!--        //   },-->
-<!--        //    {-->
-<!--        //        value: 2000,-->
-<!--        //        color: "#8CD600",-->
-<!--        //        highlight: "#8CD600",-->
-<!--        //        label: "Grey"-->
-<!--        //    }-->
-<!--        // ];-->
-<!--        var ctx = document.getElementById("pieChart1").getContext("2d");-->
-<!--        var myNewChart = new Chart(ctx).Pie(pieAll, pieOptions);-->
-<!--        // END PIE CHART-->
-<!--        })()-->
-<!--    })-->
-
-<!--</script>-->
-</html>
+    </html>

@@ -903,6 +903,22 @@
         window.lineOptions = {
             responsive: true,
             maintainAspectRatio: false,
+            scales: {
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    fontSize: 18,
+                    labelString: 'Pounds, £'
+                }
+            }],
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    fontSize: 18,
+                    labelString: 'Dates'
+                }
+            }],
+            },
         };
 
         var lineData = {

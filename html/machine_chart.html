@@ -742,6 +742,22 @@
             //Boolean - Whether to fill the dataset with a colour
             // datasetFill: true,
             //Boolean - Re-draw chart on page resize
+            scales: {
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    fontSize: 18,
+                    labelString: 'Pounds, £'
+                }
+            }],
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    fontSize: 18,
+                    labelString: 'Dates'
+                }
+            }],
+            },
             responsive: true,
             maintainAspectRatio: false,
             //String - A legend template
