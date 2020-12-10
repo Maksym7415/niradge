@@ -379,7 +379,7 @@
                 break;
             case '6 Month':
                 dayName = 'SIX_MONTH';
-                isCompressed = true;
+                isCompressed = false;
                 break;
             default:
                 dayName = '30DAYS';
@@ -598,7 +598,6 @@
                         this.machineLabel.push(el.MACHINE_NUMBER)
                         Object.keys(this.dates).map((item) => {
                             if (item === el.TXN_DATE) {
-                                console.log(el.MACHINE_NAME)
                                 return this.dates = {
                                     ...this.dates,
                                     [item]: {
@@ -608,8 +607,7 @@
                                         CONTACTLESS_SALES: +this.dates[item]
                                             .CONTACTLESS_SALES + +el.CONTACTLESS_SALES,
                                         terminal: el.TERMINAL_NUMBER,
-                                       machineName: {...this.dates[item].machineName, [el.MACHINE_NAME] : el.MACHINE_NAME}
-                                        
+                                       machineName: {...this.dates[item].machineName, [el.MACHINE_NAME] : {value: +el.CONTACTLESS_SALES, name: el.MACHINE_NAME}}
                                        
                                     }
                                 }
@@ -617,7 +615,7 @@
                         })
                     });
                 }
-                if (isCompressed) this.dates = this.redoneData(initialData);
+             if (isCompressed) this.dates = this.redoneData(initialData);
                 this.appSales = Object.keys(this.dates).map(el => this.dates[el].APP_SALES);
                 this.cashSales = Object.keys(this.dates).map(el => this.dates[el].CASH_SALES);
                 this.displayTheTerminalData();
@@ -648,9 +646,8 @@
                 let lineData = {}
                 this.machines.forEach((el ,index) => {
                     lineData = Object.keys(this.dates).map((item) => {
-                        //console.log(el.MACHINE_NAME, this.dates[item].machineName[el.MACHINE_NAME])
-                        if(el.MACHINE_NAME === this.dates[item].machineName[el.MACHINE_NAME]) {
-                            return this.dates[item].CONTACTLESS_SALES/ Object.keys(this.dates[item].machineName).length
+                        if(el.MACHINE_NAME === this.dates[item].machineName[el.MACHINE_NAME]?.name) {
+                            return this.dates[item].machineName[el.MACHINE_NAME]?.value
                         }else {
                             return 0
                         }
