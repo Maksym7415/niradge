@@ -416,7 +416,7 @@
                 borderWidth: 2,
             
             })
-
+            
         const myNewChart = new Chart(ctx, {
             type: 'line',
             data: window.machineChart.lineData,
@@ -424,12 +424,13 @@
         });
         var myHzBarChart = new Chart(ctx1, {
         type: 'horizontalBar',
-        data: {
+        data: arrBarHzData.length <= 1 ? {} : {
         labels:  ['Machine contactless sales'],
         datasets: arrBarHzData
     },
     options: {...window.hzBarOptions, scales: {  ...window.hzBarOptions.scales, xAxes: [{ ...window.hzBarOptions.scales.xAxes[0], ticks: {...window.hzBarOptions.scales.xAxes[0].ticks, max: holeData.all}}]}}
 });
+
     });
     
 </script>
@@ -500,13 +501,22 @@
                 try {
                     this.res = await this.fetchData(name);
                     this.machineContactless(this.res.KPRESPONSE.CHART_DATA_LIST)
-                    this.deleteLoader();
+                    this.res.KPRESPONSE.CHART_DATA_LIST && this.deleteLoader();
                     this.createMachineList();
                     this.displayData(isCompressed, start, true);
                 } catch (e) {
+                    //document.getElementById("linechart_machine").remove();
+                    // const noData = document.createElement('div');
+                    // noData.setAttribute('id', 'no_data')
+                    // noData.innerText = 'No data'
+                    //const div = document.getElementById("linechart_machine_parent").appendChild(noData);
                     this.deleteLoader();
+                    //document.getElementById('machine_id').remove();
+                    //document.getElementById('location_title').innerText = 'Terminal Location: ' 
+                    window.machineChart.machineLineData = []
+                    window.machineChart.lineData = []
                     setTimeout(() => {
-                        alert('Error in Api')
+                        alert('Error in Api');
                     }, 0)
                 }
             }
@@ -661,23 +671,7 @@
                             }
                         )           
                 })
-                //     Object.keys(this.terminalObject).forEach((item) => {
-                        
-                //          a = Object.keys(this.dates).map(el => {
-                //             if( this.dates[el].terminal === item || !this.dates[el].terminal) {
-                //             this.terminalData.push(this.dates[el].CONTACTLESS_SALES)
-                //             return this.dates[el].CONTACTLESS_SALES
-                //         }
-                //         })
-                        // this.datasets.push(
-                        //     {
-                        //         label: 'Terminal №' + item,
-                        //         backgroundColor: "rgba(180,90,163,0.1)",
-                        //         borderColor: "#b45aa3",
-                        //         data: a
-                        //     }
-                        // )               
-                // });
+
                 this.datasets.push({
                         label: 'Contactless sales',
                         backgroundColor: "rgba(0,88,30,0.1)",
@@ -726,22 +720,22 @@
                     })
                     Object.keys(fullTerminalObject).forEach((el) => {
                         if(![...mainTerminalInfo.children].length) {
-                            let terminalLocation = document.createElement('p')
+                            let terminalLocation = document.createElement('p');
+                            terminalLocation.setAttribute('id', 'location_title')
                             terminalLocation.innerText = 'Terminal Location: ' + fullTerminalObject[el][0].terminalLocation
 
                             let machineMapped = document.createElement('p')
                             machineMapped.innerText = 'Machine mapped:'
 
                             let machineDiv = document.createElement('div');
+                            machineDiv.setAttribute('id', 'machine_id')
                             machineDiv.style.display = 'flex'
                             machineDiv.style.width = '75%'
                             machineDiv.style.flexDirection = 'column'
                             machineDiv.style.alignItems = 'end'
                             machineDiv.style.marginLeft = '110px'
                             //machineDiv.classList.add('machineDiv');
-
                             fullTerminalObject[el].forEach((item) => {
-                                console.log(item.machineName)
                                 let machineName_p = document.createElement('p')
                                 machineName_p.innerText = item.machineName + '(' + item.machineNumber + ')'
                                 // let machineNumber_p = document.createElement('p')
@@ -756,32 +750,11 @@
                             mainTerminalInfo.append(machineMapped)
                             mainTerminalInfo.append(machineDiv)
                         }
-                        // else {
-                        //     mainTerminalInfo.children[0].innerText = fullTerminalObject[el][0].terminalLocation
-                        //     fullTerminalObject[el].forEach((item) => {
-                        //         console.log(item)
-                        //         const a = [...mainTerminalInfo.children[2].children].forEach((el, index) => {
-                        //             if(index % 2) {
-                        //                 el.innerText = item.machineName
-                        //             }
-                                    
-                        //         })
-                        //         // let machineName_p = document.createElement('p')
-                        //         // machineName_p.innerText = item.machineName
-                        //         // let machineNumber_p = document.createElement('p')
-                        //         // machineNumber_p.innerText = item.machineNumber
-
-                        //         // mainTerminalInfo.children[2].append(machineNumber_p)
-                        //         // mainTerminalInfo.children[2].append(machineName_p)
-
-                                
-                        //     })
-                        // }
-
+                    
                     })
             }
             this.displayTheTerminalData = async function (terminal) {
-                    this.terminalObject = {}
+                    this.terminalObject = {};
                     this.res.KPRESPONSE.CHART_DATA_LIST.forEach((el) => {
                         if(!(el.TERMINAL_NUMBER in  this.terminalObject)) {
                             this.terminalObject[el.TERMINAL_NUMBER] = el.TERMINAL_NUMBER
@@ -801,7 +774,8 @@
             }
 
             this.createCanvas = function () {
-                document.getElementById("linechart_machine").remove();
+                   document.getElementById("linechart_machine").remove();
+                
                 const canvas = document.createElement('canvas');
                 canvas.id = 'linechart_machine';
                 canvas.height = 250;
@@ -868,35 +842,6 @@
             // }
         ]
 
-        var lineOptions = {
-            ///Boolean - Whether grid lines are shown across the chart
-            scaleShowGridLines: true,
-            //String - Colour of the grid lines
-            scaleGridLineColor: "rgba(0,0,0,.05)",
-            //Number - Width of the grid lines
-            scaleGridLineWidth: 1,
-            //Boolean - Whether the line is curved between points
-            bezierCurve: true,
-            //Number - Tension of the bezier curve between points
-            bezierCurveTension: 0,
-            //Boolean - Whether to show a dot for each point
-            pointDot: true,
-            //Number - Radius of each point dot in pixels
-            pointDotRadius: 4,
-            //Number - Pixel width of point dot stroke
-            pointDotStrokeWidth: 1,
-            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
-            pointHitDetectionRadius: 20,
-            //Boolean - Whether to show a stroke for datasets
-            datasetStroke: true,
-            //Number - Pixel width of dataset stroke
-            datasetStrokeWidth: 3,
-            //Boolean - Whether to fill the dataset with a colour
-            datasetFill: true,
-            //Boolean - Re-draw chart on page resize
-            responsive: true,
-            //String - A legend template
-        };
         window.lineOptions = {
             responsive: true,
             maintainAspectRatio: false,
@@ -916,32 +861,6 @@
                 }
             }],
             },
-        };
-
-        var lineData = {
-            labels: Object.keys(machineChart.dates),
-            datasets: [
-                // {
-                //     label: "My First dataset",
-                //     fillColor: "rgba(0,0,0,0)",
-                //     strokeColor: "#00581E",
-                //     pointColor: "#00581E",
-                //     pointStrokeColor: "#00581E",
-                //     pointHighlightFill: "#00581E",
-                //     pointHighlightStroke: "#00581E",
-                //     data: machineChart.contactlessSales
-                // },
-                // {
-                //     label: "My Second dataset",
-                //     fillColor: "rgba(0,0,0,0)",
-                //     strokeColor: "#FFB200",
-                //     pointColor: "#FFB200",
-                //     pointStrokeColor: "#FFB200",
-                //     pointHighlightFill: "#FFB200",
-                //     pointHighlightStroke: "#FFB200",
-                //     data: machineChart.cashSales
-                // },
-            ]
         };
 
         let holeData = {all: 0}
@@ -988,9 +907,6 @@
                 max: holeData.all,
                 min: 0,
                 stepSize: 10,
-                //   callback: function(value, index, values) {
-                //     return value / 1 + '%';
-                //   }
                 }
             }]
             }
@@ -1042,306 +958,4 @@
     })()
 
 </script>
-<script type="text/javascript">
-    // PAGE RELATED SCRIPTS
-
-    /* chart colors default */
-    var $chrt_border_color = "#efefef";
-    var $chrt_grid_color = "#DDD"
-    var $chrt_main = "#E24913";
-    /* red       */
-    var $chrt_second = "#8CD600";
-    /* blue      */
-    var $chrt_third = "#FF9F01";
-    /* orange    */
-    var $chrt_fourth = "#FF0909";
-    /* green     */
-    var $chrt_fifth = "#BD362F";
-    /* dark red  */
-    var $chrt_mono = "#000";
-
-    $(document).ready(function () {
-
-        // DO NOT REMOVE : GLOBAL FUNCTIONS!
-        pageSetUp();
-        /* sales chart */
-
-
-        /* end bar chart */
-
-        /* bar-chart-h */
-        // if ($("#bar-chart-h").length) {
-        //     //Display horizontal graph
-        //     var d1_h = [];
-        //     for (var i = 0; i <= 3; i += 1)
-        //         d1_h.push([ parseInt(Math.random() * 30), i ]);
-
-        //     var d2_h = [];
-        //     for (var i = 0; i <= 3; i += 1)
-        //         d2_h.push([ parseInt(Math.random() * 30), i ]);
-
-        //     var d3_h = [];
-        //     for (var i = 0; i <= 3; i += 1)
-        //         d3_h.push([ parseInt(Math.random() * 30), i ]);
-
-        //     var ds_h = new Array();
-        //     ds_h.push({
-        //         data: d1_h,
-        //         bars: {
-        //             horizontal: true,
-        //             show: true,
-        //             barWidth: 0.2,
-        //             order: 1,
-        //         }
-        //     });
-
-        //     ds_h.push({
-        //         data: d3_h,
-        //         bars: {
-        //             horizontal: true,
-        //             show: true,
-        //             barWidth: 0.2,
-        //             order: 3
-        //         }
-        //     });
-            
-
-        //     // display graph
-        //     $.plot($("#bar-chart-h"), ds_h, {
-        //         colors: [ $chrt_second, $chrt_fourth, "#8CD600", "#8CD600" ],
-        //         grid: {
-        //             show: true,
-        //             hoverable: true,
-        //             clickable: true,
-        //             tickColor: $chrt_border_color,
-        //             borderWidth: 0,
-        //             borderColor: $chrt_border_color,
-        //         },
-        //         legend: true,
-        //         tooltip: true,
-        //         tooltipOpts: {
-        //             content: "<b>%x</b> = <span>%y</span>",
-        //             defaultTheme: false
-        //         }
-        //     });
-
-        // }
-
-        /* end bar-chart-h */
-
-
-    });
-
-    /* end flot charts */
-
-</script>
-
-
-<!--<script type="text/javascript">-->
-
-<!--    $(document).ready(function () {-->
-
-<!--        (async () => {-->
-
-<!--            pageSetUp();-->
-
-<!--            const getTerminalChartCash = (result) => {-->
-<!--                let appSales = [], cashSales = [], cashlessSales = [], data = [];-->
-<!--                result.map(item => {-->
-<!--                    appSales.push(item.APP_SALES);-->
-<!--                    cashSales.push(item.CASH_SALES);-->
-<!--                    cashlessSales.push(item.CONTACTLESS_SALES);-->
-<!--                    data.push(item.TXN_DATE);-->
-<!--                });-->
-<!--                return { appSales, cashSales, cashlessSales, data };-->
-<!--            }-->
-
-<!--            const response = await fetch('http://localhost:3000/TERMINAL_CHART_CASH');-->
-<!--            const res = await response.json();-->
-<!--            const { appSales, cashSales, cashlessSales, data } = getTerminalChartCash(res);-->
-
-
-<!--            var lineOptions = {-->
-<!--                ///Boolean - Whether grid lines are shown across the chart-->
-<!--                scaleShowGridLines: true,-->
-<!--                //String - Colour of the grid lines-->
-<!--                scaleGridLineColor: "rgba(0,0,0,.05)",-->
-<!--                //Number - Width of the grid lines-->
-<!--                scaleGridLineWidth: 1,-->
-<!--                //Boolean - Whether the line is curved between points-->
-<!--                bezierCurve: true,-->
-<!--                //Number - Tension of the bezier curve between points-->
-<!--                bezierCurveTension: 0,-->
-<!--                //Boolean - Whether to show a dot for each point-->
-<!--                pointDot: true,-->
-<!--                //Number - Radius of each point dot in pixels-->
-<!--                pointDotRadius: 4,-->
-<!--                //Number - Pixel width of point dot stroke-->
-<!--                pointDotStrokeWidth: 1,-->
-<!--                //Number - amount extra to add to the radius to cater for hit detection outside the drawn point-->
-<!--                pointHitDetectionRadius: 20,-->
-<!--                //Boolean - Whether to show a stroke for datasets-->
-<!--                datasetStroke: true,-->
-<!--                //Number - Pixel width of dataset stroke-->
-<!--                datasetStrokeWidth: 3,-->
-<!--                //Boolean - Whether to fill the dataset with a colour-->
-<!--                datasetFill: true,-->
-<!--                //Boolean - Re-draw chart on page resize-->
-<!--                responsive: true,-->
-<!--                //String - A legend template-->
-<!--            };-->
-
-<!--            var lineData = {-->
-<!--                labels: data,-->
-<!--                datasets: [-->
-<!--                    {-->
-<!--                        label: "My First dataset",-->
-<!--                        fillColor: "rgba(0,0,0,0)",-->
-<!--                        strokeColor: "#00581E",-->
-<!--                        pointColor: "#00581E",-->
-<!--                        pointStrokeColor: "#00581E",-->
-<!--                        pointHighlightFill: "#00581E",-->
-<!--                        pointHighlightStroke: "#00581E",-->
-<!--                        data: appSales-->
-<!--                    },-->
-<!--                    {-->
-<!--                        label: "My Second dataset",-->
-<!--                        fillColor: "rgba(0,0,0,0)",-->
-<!--                        strokeColor: "#FFB200",-->
-<!--                        pointColor: "#FFB200",-->
-<!--                        pointStrokeColor: "#FFB200",-->
-<!--                        pointHighlightFill: "#FFB200",-->
-<!--                        pointHighlightStroke: "#FFB200",-->
-<!--                        data: cashSales-->
-<!--                    },-->
-<!--                    {-->
-<!--                        label: "My Second dataset",-->
-<!--                        fillColor: "rgba(0,0,0,0)",-->
-<!--                        strokeColor: "#8CD600",-->
-<!--                        pointColor: "#8CD600",-->
-<!--                        pointStrokeColor: "#8CD600",-->
-<!--                        pointHighlightFill: "#8CD600",-->
-<!--                        pointHighlightStroke: "#8CD600",-->
-<!--                        data: cashlessSales-->
-<!--                    }-->
-<!--                ]-->
-<!--            };-->
-
-<!--            // render chart-->
-<!--            var ctx = document.getElementById("linechart_machine").getContext("2d");-->
-<!--            var myNewChart = new Chart(ctx).Line(lineData, lineOptions);-->
-
-<!--            // BAR CHART-->
-
-
-<!--        })()-->
-<!--    })-->
-
-<!--</script>-->
-<!--<script type="text/javascript">-->
-<!--    // PAGE RELATED SCRIPTS-->
-
-<!--    /* chart colors default */-->
-<!--    var $chrt_border_color = "#efefef";-->
-<!--    var $chrt_grid_color = "#DDD"-->
-<!--    var $chrt_main = "#E24913";-->
-<!--    /* red       */-->
-<!--    var $chrt_second = "#8CD600";-->
-<!--    /* blue      */-->
-<!--    var $chrt_third = "#FF9F01";-->
-<!--    /* orange    */-->
-<!--    var $chrt_fourth = "#FF0909";-->
-<!--    /* green     */-->
-<!--    var $chrt_fifth = "#BD362F";-->
-<!--    /* dark red  */-->
-<!--    var $chrt_mono = "#000";-->
-
-<!--    $(document).ready(function () {-->
-
-<!--        // DO NOT REMOVE : GLOBAL FUNCTIONS!-->
-<!--        (async () => {-->
-<!--            pageSetUp();-->
-
-<!--            const getTerminalChartTime = (result) => {-->
-<!--                let downtime = [], uptime = [];-->
-<!--                result.map((item, index) => {-->
-<!--                    downtime.push([ item.downtime, index ]);-->
-<!--                    uptime.push([ item.uptime, index ]);-->
-<!--                });-->
-<!--                return { downtime, uptime };-->
-<!--            }-->
-
-<!--            const response = await fetch('http://localhost:3000/TERMINAL_CHART_TIME');-->
-<!--            const res = await response.json();-->
-<!--            const { downtime, uptime } = getTerminalChartTime(res);-->
-<!--            /* sales chart */-->
-
-
-<!--            /* end bar chart */-->
-
-<!--            /* bar-chart-h */-->
-<!--            if ($("#bar-chart-h").length) {-->
-<!--                //Display horizontal graph-->
-<!--                // var d1_h = [];-->
-<!--                // for (var i = 0; i <= 3; i += 1)-->
-<!--                // 	d1_h.push([parseInt(Math.random() * 30), i]);-->
-
-<!--                // var d2_h = [];-->
-<!--                // for (var i = 0; i <= 3; i += 1)-->
-<!--                // 	d2_h.push([parseInt(Math.random() * 30), i]);-->
-
-<!--                // var d3_h = [];-->
-<!--                // for (var i = 0; i <= 3; i += 1)-->
-<!--                // 	d3_h.push([parseInt(Math.random() * 30), i]);-->
-
-<!--                var ds_h = new Array();-->
-<!--                ds_h.push({-->
-<!--                    data: downtime,-->
-<!--                    bars: {-->
-<!--                        horizontal: true,-->
-<!--                        show: true,-->
-<!--                        barWidth: 0.2,-->
-<!--                        order: 1,-->
-<!--                    }-->
-<!--                });-->
-
-<!--                ds_h.push({-->
-<!--                    data: uptime,-->
-<!--                    bars: {-->
-<!--                        horizontal: true,-->
-<!--                        show: true,-->
-<!--                        barWidth: 0.2,-->
-<!--                        order: 3-->
-<!--                    }-->
-<!--                });-->
-
-<!--                // display graph-->
-<!--                $.plot($("#bar-chart-h"), ds_h, {-->
-<!--                    colors: [ $chrt_second, $chrt_fourth, "#8CD600", "#8CD600" ],-->
-<!--                    grid: {-->
-<!--                        show: true,-->
-<!--                        hoverable: true,-->
-<!--                        clickable: true,-->
-<!--                        tickColor: $chrt_border_color,-->
-<!--                        borderWidth: 0,-->
-<!--                        borderColor: $chrt_border_color,-->
-<!--                    },-->
-<!--                    legend: true,-->
-<!--                    tooltip: true,-->
-<!--                    tooltipOpts: {-->
-<!--                        content: "<b>%x</b> = <span>%y</span>",-->
-<!--                        defaultTheme: false-->
-<!--                    }-->
-<!--                });-->
-
-<!--            }-->
-
-<!--            /* end bar-chart-h */-->
-
-<!--        })()-->
-<!--    });-->
-
-<!--    /* end flot charts */-->
-
-<!--</script>-->
 </html>
